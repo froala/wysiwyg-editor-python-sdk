@@ -16,10 +16,12 @@ def index(request):
 
 def upload_file(request):
     response = File.upload(DjangoAdapter(request), '/public/')
-    response['link'] = settings.PUBLIC_URL + response['link']
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 def upload_image(request):
     response = Image.upload(DjangoAdapter(request), '/public/')
-    response['link'] = settings.PUBLIC_URL + response['link']
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def load_images(request):
+    response = Image.list('/public/')
     return HttpResponse(json.dumps(response), content_type="application/json")

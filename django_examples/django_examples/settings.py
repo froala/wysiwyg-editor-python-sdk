@@ -54,7 +54,9 @@ ROOT_URLCONF = 'django_examples.urls'
 # Used for development purposes. Never use this in production.
 STATIC_DIR = os.path.join(BASE_DIR, '../')
 STATIC_URL = '/static/'
-PUBLIC_URL = '/static/django_examples'
+
+STATIC_PUBLIC_DIR = os.path.join(BASE_DIR, 'public')
+STATIC_PUBLIC_URL = '/public/'
 
 # Create public directory at startup.
 publicDirectory = os.path.join(BASE_DIR, 'public')
