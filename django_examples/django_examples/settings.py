@@ -43,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -52,8 +52,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'django_examples.urls'
 
 # Used for development purposes. Never use this in production.
-STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '../'))
+STATIC_DIR = os.path.join(BASE_DIR, '../')
 STATIC_URL = '/static/'
+PUBLIC_URL = '/static/django_examples'
+
+# Create public directory at startup.
+publicDirectory = os.path.join(BASE_DIR, 'public')
+if not os.path.exists(publicDirectory):
+    os.makedirs(publicDirectory)
+
 STATICFILES_DIRS = [
     STATIC_DIR
 ]
