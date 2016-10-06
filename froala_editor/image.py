@@ -37,9 +37,6 @@ class Image(object):
         # Filenames in the uploads folder.
         fnames = [f for f in listdir(absoluteFolderPath) if isfile(join(absoluteFolderPath, f))]
 
-        if not fnames:
-          raise Exception('Images folder does not exist!')
-
         for fname in fnames:
             mime = MimeTypes()
             mimeType = mime.guess_type(absoluteFolderPath + fname)[0]

@@ -8,8 +8,8 @@ class File(object):
     @staticmethod
     def upload(req, fileRoute, fileOptions = None):
 
-        filedname = 'file'
-        filename = req.getFilename(filedname);
+        fieldname = 'file'
+        filename = req.getFilename(fieldname);
         extension = os.path.splitext(filename)[1]
 
         # Generate new random name.
@@ -17,9 +17,7 @@ class File(object):
 
         fullNamePath = os.path.abspath(os.path.dirname(sys.argv[0])) +  routeFilename
 
-        with open(fullNamePath, 'wb+') as destination:
-            for chunk in req.getChunks(filedname):
-                destination.write(chunk)
+        req.saveFile(fieldname, fullNamePath)
 
         # build and send response
         response = {}
