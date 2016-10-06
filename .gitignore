@@ -3,3 +3,4 @@ django_examples/db.sqlite3
 django_examples/public/
 flask_examples/public/
 **/.DS_STORE
+**/*.pyc
