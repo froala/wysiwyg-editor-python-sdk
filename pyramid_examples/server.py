@@ -29,6 +29,22 @@ def upload_image(request):
     response = Image.upload(PyramidAdapter(request), '/public/')
     return Response(json.dumps(response))
 
+def delete_file(request):
+    src = request.POST.get('src')
+    try:
+      File.delete(src)
+      return Response(json.dumps('ok'))
+    except:
+      raise Exception('Could not delete file')
+
+def delete_image(request):
+    src = request.POST.get('src')
+    try:
+      Image.delete(src)
+      return Response(json.dumps('ok'))
+    except:
+      raise Exception('Could not delete image')
+
 def load_images(request):
     response = Image.list('/public/')
     return Response(json.dumps(response))
@@ -47,6 +63,12 @@ if __name__ == '__main__':
     config.add_route('upload_image', '/upload_image')
     config.add_view(upload_image, route_name='upload_image')
 
+    config.add_route('delete_file', '/delete_file')
+    config.add_view(delete_file, route_name='delete_file')
+
+    config.add_route('delete_image', '/delete_image')
+    config.add_view(delete_image, route_name='delete_image')
+
     config.add_route('load_images', '/load_images')
     config.add_view(load_images, route_name='load_images')
     
@@ -56,4 +78,5 @@ if __name__ == '__main__':
 
     app = config.make_wsgi_app()
     server = make_server('0.0.0.0', 7000, app)
+    print('* Running on http://127.0.0.1:7000/ (Press CTRL+C to quit)')
     server.serve_forever()

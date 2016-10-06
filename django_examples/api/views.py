@@ -22,6 +22,22 @@ def upload_image(request):
     response = Image.upload(DjangoAdapter(request), '/public/')
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+def delete_file(request):
+    src = request.POST.get('src', '')
+    try:
+      File.delete(src)
+      return HttpResponse('ok', content_type="application/json")
+    except:
+      raise Exception('Could not delete file')
+
+def delete_image(request):
+    src = request.POST.get('src', '')
+    try:
+      Image.delete(src)
+      return HttpResponse('ok', content_type="application/json")
+    except:
+      raise Exception('Could not delete image')
+
 def load_images(request):
     response = Image.list('/public/')
     return HttpResponse(json.dumps(response), content_type="application/json")

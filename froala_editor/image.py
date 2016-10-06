@@ -21,6 +21,10 @@ class Image(object):
         return File.upload(req, fileRoute, fileOptions)
 
     @staticmethod
+    def delete(src):
+        return File.delete(src)
+
+    @staticmethod
     def list(folderPath, thumbPath = None):
 
         if thumbPath == None:

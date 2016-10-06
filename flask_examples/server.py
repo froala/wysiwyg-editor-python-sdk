@@ -40,6 +40,25 @@ def upload_image():
     response = Image.upload(FlaskAdapter(request), '/public/')
     return json.dumps(response)
 
+@app.route('/delete_file', methods=['POST'])
+def delete_file():
+    src = request.form.get('src')
+    try:
+      File.delete(src)
+      return json.dumps('ok')
+    except:
+      raise Exception('Could not delete file')
+
+@app.route('/delete_image', methods=['POST'])
+def delete_image():
+    src = request.form.get('src')
+    print src
+    try:
+      Image.delete(src)
+      return json.dumps('ok')
+    except:
+      raise Exception('Could not delete image')
+
 @app.route('/load_images')
 def load_images():
     response = Image.list('/public/')
