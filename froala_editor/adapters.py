@@ -1,4 +1,6 @@
 
+import shutil
+
 """
 Adapters to provide an interface to requests objects on every framework.
 
@@ -27,7 +29,7 @@ class DjangoAdapter(BaseAdapter):
         self.request = request
 
     def checkFile(self, fieldname):
-        if not self.request.FILES[fieldname]:
+        if fieldname not in self.request.FILES:
             raise Exception("File does not exist.")
 
     def getFilename(self, fieldname):
@@ -48,7 +50,7 @@ class FlaskAdapter(BaseAdapter):
         self.request = request
 
     def checkFile(self, fieldname):
-        if not self.request.files[fieldname]:
+        if fieldname not in self.request.files:
             raise Exception("File does not exist.")
 
     def getFilename(self, fieldname):
@@ -59,3 +61,25 @@ class FlaskAdapter(BaseAdapter):
         self.checkFile(fieldname)
         file = self.request.files[fieldname]
         file.save(fullNamePath)
+
+
+class PyramidAdapter(BaseAdapter):
+
+    def __init__(self, request):
+        self.request = request
+
+    def checkFile(self, fieldname):
+        if fieldname not in self.request.POST:
+            raise Exception("File does not exist.")
+
+    def getFilename(self, fieldname):
+        self.checkFile(fieldname)
+        return self.request.POST[fieldname].filename
+
+    def saveFile(self, fieldname, fullNamePath):
+        self.checkFile(fieldname)
+        file = self.request.POST[fieldname].file
+
+        file.seek(0)
+        with open(fullNamePath, 'wb') as output_file:
+            shutil.copyfileobj(file, output_file)

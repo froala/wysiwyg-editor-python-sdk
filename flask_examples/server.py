@@ -17,15 +17,15 @@ if not os.path.exists(publicDirectory):
 
 
 @app.route('/')
-def send_main_html():
+def get_main_html():
     return send_from_directory('..', 'common/index.html')
 
 @app.route('/public/<path:path>')
-def send_public(path):
+def get_public(path):
     return send_from_directory('public/', path)
 
 @app.route('/static/<path:path>')
-def send_static(path):
+def get_static(path):
     return send_from_directory('../', path)
 
 
@@ -37,7 +37,7 @@ def upload_file():
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
-    response = File.upload(FlaskAdapter(request), '/public/')
+    response = Image.upload(FlaskAdapter(request), '/public/')
     return json.dumps(response)
 
 @app.route('/load_images')
