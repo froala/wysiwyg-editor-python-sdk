@@ -22,6 +22,13 @@ def upload_image(request):
     response = Image.upload(DjangoAdapter(request), '/public/')
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+def upload_image_resize(request):
+    options = {
+      'resize': '300x300'
+    }
+    response = Image.upload(DjangoAdapter(request), '/public/', options)
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
 def delete_file(request):
     src = request.POST.get('src', '')
     try:

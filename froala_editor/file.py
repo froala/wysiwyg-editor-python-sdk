@@ -2,14 +2,28 @@ import os
 import time
 import hashlib
 import sys
+from utils import Utils
+from wand.image import Image
 
 class File(object):
 
-    @staticmethod
-    def upload(req, fileRoute, fileOptions = None):
+    defaultUploadOptions = {
+        'fieldname': 'file',
+        'validation': {
+            'allowedExts': ['txt', 'pdf', 'doc'],
+            'allowedMimeTypes': ['text/plain', 'application/msword', 'application/x-pdf', 'application/pdf']
+        }
+    }
 
-        fieldname = 'file'
-        filename = req.getFilename(fieldname);
+    @staticmethod
+    def upload(req, fileRoute, options = None):
+
+        if options is None:
+            options = File.defaultUploadOptions
+        else:
+            options = Utils.merge_dicts(File.defaultUploadOptions, options)
+
+        filename = req.getFilename(options['fieldname']);
         extension = os.path.splitext(filename)[1]
 
         # Generate new random name.
@@ -17,7 +31,13 @@ class File(object):
 
         fullNamePath = os.path.abspath(os.path.dirname(sys.argv[0])) +  routeFilename
 
-        req.saveFile(fieldname, fullNamePath)
+        req.saveFile(options['fieldname'], fullNamePath)
+
+        # Check image resize.
+        if 'resize' in options and options['resize'] is not None:
+            with Image(filename=fullNamePath) as img:
+                img.transform(resize=options['resize'])
+                img.save(filename=fullNamePath)
 
         # build and send response
         response = {}

@@ -40,6 +40,14 @@ def upload_image():
     response = Image.upload(FlaskAdapter(request), '/public/')
     return json.dumps(response)
 
+@app.route('/upload_image_resize', methods=['POST'])
+def upload_image_resize():
+    options = {
+      'resize': '300x300'
+    }
+    response = Image.upload(FlaskAdapter(request), '/public/', options)
+    return json.dumps(response)
+
 @app.route('/delete_file', methods=['POST'])
 def delete_file():
     src = request.form.get('src')

@@ -1,4 +1,5 @@
 from froala_editor import File
+from utils import Utils
 from os import listdir
 from os.path import isfile, join
 from mimetypes import MimeTypes
@@ -13,12 +14,20 @@ class Image(object):
         'validation': {
             'allowedExts': ['gif', 'jpeg', 'jpg', 'png', 'svg', 'blob'],
             'allowedMimeTypes': ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/x-png', 'image/png', 'image/svg+xml']
-        }
+        },
+        # string resize param from http://docs.wand-py.org/en/0.4.3/guide/resizecrop.html#transform-images
+        # Examples: '100x100', '100x100!'. Find more on http://www.imagemagick.org/script/command-line-processing.php#geometry
+        'resize': None
     }
 
     @staticmethod
-    def upload(req, fileRoute, fileOptions = None):
-        return File.upload(req, fileRoute, fileOptions)
+    def upload(req, fileRoute, options = None):
+        if options is None:
+            options = Image.defaultUploadOptions
+        else:
+            options = Utils.merge_dicts(Image.defaultUploadOptions, options)
+
+        return File.upload(req, fileRoute, options)
 
     @staticmethod
     def delete(src):

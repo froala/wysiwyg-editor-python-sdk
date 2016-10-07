@@ -29,6 +29,13 @@ def upload_image(request):
     response = Image.upload(PyramidAdapter(request), '/public/')
     return Response(json.dumps(response))
 
+def upload_image_resize(request):
+    options = {
+      'resize': '300x300'
+    }
+    response = Image.upload(PyramidAdapter(request), '/public/', options)
+    return Response(json.dumps(response))
+
 def delete_file(request):
     src = request.POST.get('src')
     try:
@@ -74,6 +81,9 @@ if __name__ == '__main__':
 
     config.add_route('upload_image', '/upload_image')
     config.add_view(upload_image, route_name='upload_image')
+
+    config.add_route('upload_image_resize', '/upload_image_resize')
+    config.add_view(upload_image_resize, route_name='upload_image_resize')
 
     config.add_route('delete_file', '/delete_file')
     config.add_view(delete_file, route_name='delete_file')
