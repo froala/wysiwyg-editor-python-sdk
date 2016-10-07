@@ -8,7 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.conf import settings
 
-from froala_editor import File, Image
+from froala_editor import File, Image, S3
 from froala_editor import DjangoAdapter
 
 def index(request):
@@ -40,4 +40,16 @@ def delete_image(request):
 
 def load_images(request):
     response = Image.list('/public/')
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def amazon_hash(request):
+    config = {
+        'bucket': os.environ['AWS_BUCKET'],
+        'region': os.environ['AWS_REGION'],
+        'keyStart': os.environ['AWS_KEY_START'],
+        'acl': os.environ['AWS_ACL'],
+        'accessKey': os.environ['AWS_ACCESS_KEY'],
+        'secretKey': os.environ['AWS_SECRET_ACCESS_KEY']
+    }
+    response = S3.getHash(config)
     return HttpResponse(json.dumps(response), content_type="application/json")

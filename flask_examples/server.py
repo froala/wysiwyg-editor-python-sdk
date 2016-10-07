@@ -1,12 +1,12 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, jsonify
 app = Flask(__name__, static_url_path='')
 
-import os.path
+import os
 import json
 import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
-from froala_editor import File, Image
+from froala_editor import File, Image, S3
 from froala_editor import FlaskAdapter
 
 # Create public directory at startup.
@@ -63,3 +63,16 @@ def delete_image():
 def load_images():
     response = Image.list('/public/')
     return json.dumps(response)
+
+@app.route('/amazon_hash')
+def amazon_hash():
+    config = {
+        'bucket': os.environ['AWS_BUCKET'],
+        'region': os.environ['AWS_REGION'],
+        'keyStart': os.environ['AWS_KEY_START'],
+        'acl': os.environ['AWS_ACL'],
+        'accessKey': os.environ['AWS_ACCESS_KEY'],
+        'secretKey': os.environ['AWS_SECRET_ACCESS_KEY']
+    }
+    response = S3.getHash(config)
+    return jsonify(**response)

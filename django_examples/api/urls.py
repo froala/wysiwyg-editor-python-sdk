@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^delete_file', views.delete_file, name='delete_file'),
     url(r'^delete_image', views.delete_image, name='delete_image'),
     url(r'^load_images', views.load_images, name='load_images'),
+    url(r'^amazon_hash', views.amazon_hash, name='amazon_hash'),
 ]

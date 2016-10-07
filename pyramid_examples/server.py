@@ -8,7 +8,7 @@ import json
 import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
-from froala_editor import File, Image
+from froala_editor import File, Image, S3
 from froala_editor import PyramidAdapter
 
 # Create public directory at startup.
@@ -49,6 +49,18 @@ def load_images(request):
     response = Image.list('/public/')
     return Response(json.dumps(response))
 
+def amazon_hash(request):
+    config = {
+        'bucket': os.environ['AWS_BUCKET'],
+        'region': os.environ['AWS_REGION'],
+        'keyStart': os.environ['AWS_KEY_START'],
+        'acl': os.environ['AWS_ACL'],
+        'accessKey': os.environ['AWS_ACCESS_KEY'],
+        'secretKey': os.environ['AWS_SECRET_ACCESS_KEY']
+    }
+    response = S3.getHash(config)
+    return response
+
 
 if __name__ == '__main__':
     config = Configurator()
@@ -71,7 +83,9 @@ if __name__ == '__main__':
 
     config.add_route('load_images', '/load_images')
     config.add_view(load_images, route_name='load_images')
-    
+
+    config.add_route('amazon_hash', '/amazon_hash')
+    config.add_view(amazon_hash, route_name='amazon_hash', renderer='json')
 
     config.add_static_view('public', path='public/')
     config.add_static_view('static', path='../')
