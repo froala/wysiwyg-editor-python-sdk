@@ -24,7 +24,8 @@ class File(object):
             options = Utils.merge_dicts(File.defaultUploadOptions, options)
 
         filename = req.getFilename(options['fieldname']);
-        extension = os.path.splitext(filename)[1]
+        extension = Utils.getExtension(filename)
+        extension = '.' + extension if extension else ''
 
         # Generate new random name.
         routeFilename = fileRoute + hashlib.sha1(str(time.time())).hexdigest() + extension
@@ -32,6 +33,11 @@ class File(object):
         fullNamePath = os.path.abspath(os.path.dirname(sys.argv[0])) +  routeFilename
 
         req.saveFile(options['fieldname'], fullNamePath)
+
+        if 'validation' in options:
+            if not Utils.isValid(options['validation'], fullNamePath, req.getMimetype(options['fieldname'])):
+                File.delete(routeFilename)
+                raise Exception('File does not meet the validation.')
 
         # Check image resize.
         if 'resize' in options and options['resize'] is not None:

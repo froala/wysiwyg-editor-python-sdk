@@ -8,6 +8,8 @@ import json
 import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
+import wand.image
+
 from froala_editor import File, Image, S3
 from froala_editor import PyramidAdapter
 
@@ -22,11 +24,44 @@ def get_main_html(request):
 
 
 def upload_file(request):
-    response = File.upload(PyramidAdapter(request), '/public/')
+    options = {
+        'validation': None
+    }
+    response = File.upload(PyramidAdapter(request), '/public/', options)
+    return Response(json.dumps(response))
+
+def upload_file_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 10 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    response = File.upload(PyramidAdapter(request), '/public/', options)
     return Response(json.dumps(response))
 
 def upload_image(request):
     response = Image.upload(PyramidAdapter(request), '/public/')
+    return Response(json.dumps(response))
+
+def upload_image_validation(request):
+
+    def validation(filePath, mimetype):
+        with wand.image.Image(filename=filePath) as img:
+            if img.width != img.height:
+                return False
+            return True
+
+    options = {
+        'fieldname': 'myImage',
+        'validation': validation
+    }
+    response = Image.upload(PyramidAdapter(request), '/public/', options)
     return Response(json.dumps(response))
 
 def upload_image_resize(request):
@@ -79,8 +114,14 @@ if __name__ == '__main__':
     config.add_route('upload_file', '/upload_file')
     config.add_view(upload_file, route_name='upload_file')
 
+    config.add_route('upload_file_validation', '/upload_file_validation')
+    config.add_view(upload_file_validation, route_name='upload_file_validation')
+
     config.add_route('upload_image', '/upload_image')
     config.add_view(upload_image, route_name='upload_image')
+
+    config.add_route('upload_image_validation', '/upload_image_validation')
+    config.add_view(upload_image_validation, route_name='upload_image_validation')
 
     config.add_route('upload_image_resize', '/upload_image_resize')
     config.add_view(upload_image_resize, route_name='upload_image_resize')

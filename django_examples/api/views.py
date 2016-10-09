@@ -8,6 +8,8 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.conf import settings
 
+import wand.image
+
 from froala_editor import File, Image, S3
 from froala_editor import DjangoAdapter
 
@@ -15,11 +17,44 @@ def index(request):
     return render_to_response(os.path.join(settings.STATIC_DIR, 'common/index.html'))
 
 def upload_file(request):
-    response = File.upload(DjangoAdapter(request), '/public/')
+    options = {
+        'validation': None
+    }
+    response = File.upload(DjangoAdapter(request), '/public/', options)
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def upload_file_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 10 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    response = File.upload(DjangoAdapter(request), '/public/', options)
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 def upload_image(request):
     response = Image.upload(DjangoAdapter(request), '/public/')
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def upload_image_validation(request):
+
+    def validation(filePath, mimetype):
+        with wand.image.Image(filename=filePath) as img:
+            if img.width != img.height:
+                return False
+            return True
+
+    options = {
+        'fieldname': 'myImage',
+        'validation': validation
+    }
+    response = Image.upload(DjangoAdapter(request), '/public/', options)
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 def upload_image_resize(request):

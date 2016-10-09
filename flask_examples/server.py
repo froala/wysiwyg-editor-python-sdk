@@ -6,6 +6,8 @@ import json
 import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
+import wand.image
+
 from froala_editor import File, Image, S3
 from froala_editor import FlaskAdapter
 
@@ -32,12 +34,47 @@ def get_static(path):
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
-    response = File.upload(FlaskAdapter(request), '/public/')
+    options = {
+        'validation': None
+    }
+    response = File.upload(FlaskAdapter(request), '/public/', options)
+    return json.dumps(response)
+
+@app.route('/upload_file_validation', methods=['POST'])
+def upload_file_validation():
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 10 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    response = File.upload(FlaskAdapter(request), '/public/', options)
     return json.dumps(response)
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
     response = Image.upload(FlaskAdapter(request), '/public/')
+    return json.dumps(response)
+
+@app.route('/upload_image_validation', methods=['POST'])
+def upload_image_validation():
+
+    def validation(filePath, mimetype):
+        with wand.image.Image(filename=filePath) as img:
+            if img.width != img.height:
+                return False
+            return True
+
+    options = {
+        'fieldname': 'myImage',
+        'validation': validation
+    }
+    response = Image.upload(FlaskAdapter(request), '/public/', options)
     return json.dumps(response)
 
 @app.route('/upload_image_resize', methods=['POST'])

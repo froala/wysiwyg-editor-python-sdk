@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import base64
 import copy
+import os
 
 class Utils(object):
 
@@ -26,3 +27,35 @@ class Utils(object):
             else:
                 aClone[key] = b[key]
         return aClone
+
+    @staticmethod
+    def getExtension(filename):
+        return os.path.splitext(filename)[1][1:]
+
+    @staticmethod
+    # Test if a file is valid based on its extension and mime type.
+    def isFileValid(filename, mimetype, allowedExts, allowedMimeTypes):
+
+        if not allowedExts or not allowedMimeTypes:
+            return False
+
+        extension = Utils.getExtension(filename)
+        return extension.lower() in allowedExts and mimetype in allowedMimeTypes
+
+    @staticmethod
+    #Generic file validation.
+    def isValid(validation, filePath, mimetype):
+
+        # No validation means you dont want to validate, so return affirmative.
+        if not validation:
+            return True
+
+        # Validation is a function provided by the user.
+        if callable(validation):
+            return validation(filePath, mimetype)
+
+        if isinstance(validation, dict):
+            return Utils.isFileValid(filePath, mimetype, validation['allowedExts'], validation['allowedMimeTypes'])
+
+        # Else: no specific validating behaviour found.
+        return False

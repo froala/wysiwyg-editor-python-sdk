@@ -19,6 +19,9 @@ class BaseAdapter(object):
     def getFilename(self, fieldname):
         self.riseError()
 
+    def getMimetype(self, fieldname):
+        self.riseError()
+
     def getChunks(self, fieldname, fullNamePath):
         self.riseError()
 
@@ -35,6 +38,10 @@ class DjangoAdapter(BaseAdapter):
     def getFilename(self, fieldname):
         self.checkFile(fieldname)
         return self.request.FILES[fieldname].name
+
+    def getMimetype(self, fieldname):
+        self.checkFile(fieldname)
+        return self.request.FILES[fieldname].content_type
 
     def saveFile(self, fieldname, fullNamePath):
         self.checkFile(fieldname)
@@ -57,6 +64,10 @@ class FlaskAdapter(BaseAdapter):
         self.checkFile(fieldname)
         return self.request.files[fieldname].filename
 
+    def getMimetype(self, fieldname):
+        self.checkFile(fieldname)
+        return self.request.files[fieldname].content_type
+
     def saveFile(self, fieldname, fullNamePath):
         self.checkFile(fieldname)
         file = self.request.files[fieldname]
@@ -75,6 +86,10 @@ class PyramidAdapter(BaseAdapter):
     def getFilename(self, fieldname):
         self.checkFile(fieldname)
         return self.request.POST[fieldname].filename
+
+    def getMimetype(self, fieldname):
+        self.checkFile(fieldname)
+        return self.request.POST[fieldname].type
 
     def saveFile(self, fieldname, fullNamePath):
         self.checkFile(fieldname)
