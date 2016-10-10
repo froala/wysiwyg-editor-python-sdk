@@ -2,7 +2,7 @@ import os
 import time
 import hashlib
 import sys
-from utils import Utils
+from .utils import Utils
 from wand.image import Image
 
 class File(object):
@@ -28,7 +28,13 @@ class File(object):
         extension = '.' + extension if extension else ''
 
         # Generate new random name.
-        routeFilename = fileRoute + hashlib.sha1(str(time.time())).hexdigest() + extension
+
+        # python 2-3 compatible:
+        try:
+            sha1 = hashlib.sha1(str(time.time()).encode('utf-8')).hexdigest() #  v3
+        except Exception:
+            sha1 = hashlib.sha1(str(time.time())).hexdigest() # v2
+        routeFilename = fileRoute + sha1 + extension
 
         fullNamePath = os.path.abspath(os.path.dirname(sys.argv[0])) +  routeFilename
 

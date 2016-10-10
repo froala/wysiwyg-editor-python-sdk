@@ -1,5 +1,5 @@
 from froala_editor import File
-from utils import Utils
+from .utils import Utils
 from os import listdir
 from os.path import isfile, join
 from mimetypes import MimeTypes

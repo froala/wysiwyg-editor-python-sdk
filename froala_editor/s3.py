@@ -2,7 +2,7 @@ import datetime
 import json
 import base64
 
-from utils import Utils
+from .utils import Utils
 
 class S3(object):
 
@@ -72,12 +72,16 @@ class S3(object):
             ],
         }
 
-        policyBase64 = base64.b64encode(json.dumps(policy))
+        # python 2-3 compatible:
+        try:
+            policyBase64 = base64.b64encode(json.dumps(policy).encode()).decode('utf-8') # v3
+        except Exception:
+            policyBase64 = base64.b64encode(json.dumps(policy)) # v2
 
         dateKey = Utils.hmac('AWS4' + secret, dateString);
-        dateRegionKey = Utils.hmac(dateKey, region);
-        dateRegionServiceKey = Utils.hmac(dateRegionKey, 's3');
-        signingKey = Utils.hmac(dateRegionServiceKey, 'aws4_request');
+        dateRegionKey = Utils.hmac(dateKey, region)
+        dateRegionServiceKey = Utils.hmac(dateRegionKey, 's3')
+        signingKey = Utils.hmac(dateRegionServiceKey, 'aws4_request')
         signature = Utils.hmac(signingKey, policyBase64, True)
 
         return {

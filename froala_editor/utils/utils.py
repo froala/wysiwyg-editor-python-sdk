@@ -9,7 +9,12 @@ class Utils(object):
     @staticmethod
     def hmac(key, string, hex=False):
 
-        hmac256 = hmac.new(key, msg=string, digestmod=hashlib.sha256)
+        # python 2-3 compatible:
+        try:
+            hmac256 = hmac.new(key.encode() if isinstance(key, str) else key, msg=string.encode('utf-8') if isinstance(string, str) else string, digestmod=hashlib.sha256) # v3
+        except Exception:
+            hmac256 = hmac.new(key, msg=string, digestmod=hashlib.sha256) # v2
+
         return hmac256.hexdigest() if hex else hmac256.digest()
 
     @staticmethod
