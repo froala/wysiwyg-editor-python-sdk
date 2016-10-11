@@ -6,37 +6,38 @@ from .utils import Utils
 
 class S3(object):
 
-    """
-    Get signature for S3.
-
-    @params config:
-      {
-        bucket: 'bucketName',
-
-        //http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
-        region: 's3',
-        keyStart: 'editor/',
-        acl: 'public-read',
-        accessKey: 'YOUR-AMAZON-S3-PUBLIC-ACCESS-KEY',
-        secretKey: 'YOUR-AMAZON-S3-SECRET-ACCESS-KEY'
-      }
-     @return:
-      {
-        bucket: bucket,
-        region: region,
-        keyStart: keyStart,
-        params: {
-          acl: acl,
-          policy: policy,
-          'x-amz-algorithm': 'AWS4-HMAC-SHA256',
-          'x-amz-credential': xAmzCredential,
-          'x-amz-date': xAmzDate,
-          'x-amz-signature': signature
-        }
-      }
-    """
     @staticmethod
     def getHash(config):
+        """
+        Get signature for S3.
+        Parameters:
+            config: dict
+            {
+                bucket: 'bucketName',
+
+                //http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+                region: 's3',
+                keyStart: 'editor/',
+                acl: 'public-read',
+                accessKey: 'YOUR-AMAZON-S3-PUBLIC-ACCESS-KEY',
+                secretKey: 'YOUR-AMAZON-S3-SECRET-ACCESS-KEY'
+            }
+         Return:
+            dict:
+            {
+                bucket: bucket,
+                region: region,
+                keyStart: keyStart,
+                params: {
+                    acl: acl,
+                    policy: policy,
+                    'x-amz-algorithm': 'AWS4-HMAC-SHA256',
+                    'x-amz-credential': xAmzCredential,
+                    'x-amz-date': xAmzDate,
+                    'x-amz-signature': signature
+                }
+            }
+        """
 
         # Check default region.
         config['region'] = config['region'] if 'region' in config else 'us-east-1'
@@ -56,6 +57,7 @@ class S3(object):
         credential = '/'.join([accessKeyId, dateString, region, 's3/aws4_request'])
         xAmzDate = dateString + 'T000000Z'
 
+        # Build policy.
         policy = {
             # 5 minutes into the future
             'expiration': (datetime.datetime.now() + datetime.timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
@@ -71,13 +73,13 @@ class S3(object):
                 ['starts-with', '$Content-Type', ''] # Accept all files.
             ],
         }
-
         # python 2-3 compatible:
         try:
             policyBase64 = base64.b64encode(json.dumps(policy).encode()).decode('utf-8') # v3
         except Exception:
             policyBase64 = base64.b64encode(json.dumps(policy)) # v2
 
+        # Generate signature.
         dateKey = Utils.hmac('AWS4' + secret, dateString);
         dateRegionKey = Utils.hmac(dateKey, region)
         dateRegionServiceKey = Utils.hmac(dateRegionKey, 's3')

@@ -1,12 +1,13 @@
 from flask import Flask, request, send_from_directory, jsonify
-app = Flask(__name__, static_url_path='')
 
 import os
 import json
 import sys
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
 import wand.image
+
+# Extend path to load Froala Editor library from outside the server.
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
 from froala_editor import File, Image, S3
 from froala_editor import FlaskAdapter
@@ -17,6 +18,7 @@ publicDirectory = os.path.join(BASE_DIR, 'public')
 if not os.path.exists(publicDirectory):
     os.makedirs(publicDirectory)
 
+app = Flask(__name__, static_url_path='')
 
 @app.route('/')
 def get_main_html():
@@ -37,7 +39,10 @@ def upload_file():
     options = {
         'validation': None
     }
-    response = File.upload(FlaskAdapter(request), '/public/', options)
+    try:
+        response = File.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/upload_file_validation', methods=['POST'])
@@ -53,12 +58,18 @@ def upload_file_validation():
         'fieldname': 'myFile',
         'validation': validation
     }
-    response = File.upload(FlaskAdapter(request), '/public/', options)
+    try:
+        response = File.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
-    response = Image.upload(FlaskAdapter(request), '/public/')
+    try:
+        response = Image.upload(FlaskAdapter(request), '/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/upload_image_validation', methods=['POST'])
@@ -74,7 +85,10 @@ def upload_image_validation():
         'fieldname': 'myImage',
         'validation': validation
     }
-    response = Image.upload(FlaskAdapter(request), '/public/', options)
+    try:
+        response = Image.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/upload_image_resize', methods=['POST'])
@@ -82,7 +96,10 @@ def upload_image_resize():
     options = {
       'resize': '300x300'
     }
-    response = Image.upload(FlaskAdapter(request), '/public/', options)
+    try:
+        response = Image.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/delete_file', methods=['POST'])
@@ -97,7 +114,6 @@ def delete_file():
 @app.route('/delete_image', methods=['POST'])
 def delete_image():
     src = request.form.get('src')
-    print src
     try:
       Image.delete(src)
       return json.dumps('ok')
@@ -106,7 +122,10 @@ def delete_image():
 
 @app.route('/load_images')
 def load_images():
-    response = Image.list('/public/')
+    try:
+        response = Image.list('/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
 @app.route('/amazon_hash')
@@ -119,5 +138,8 @@ def amazon_hash():
         'accessKey': os.environ['AWS_ACCESS_KEY'],
         'secretKey': os.environ['AWS_SECRET_ACCESS_KEY']
     }
-    response = S3.getHash(config)
+    try:
+        response = S3.getHash(config)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return jsonify(**response)

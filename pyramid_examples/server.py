@@ -6,9 +6,11 @@ from pyramid.response import FileResponse
 import os.path
 import json
 import sys
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
 import wand.image
+
+# Extend path to load Froala Editor library from outside the server.
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
 from froala_editor import File, Image, S3
 from froala_editor import PyramidAdapter
@@ -27,7 +29,10 @@ def upload_file(request):
     options = {
         'validation': None
     }
-    response = File.upload(PyramidAdapter(request), '/public/', options)
+    try:
+        response = File.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def upload_file_validation(request):
@@ -42,11 +47,17 @@ def upload_file_validation(request):
         'fieldname': 'myFile',
         'validation': validation
     }
-    response = File.upload(PyramidAdapter(request), '/public/', options)
+    try:
+        response = File.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def upload_image(request):
-    response = Image.upload(PyramidAdapter(request), '/public/')
+    try:
+        response = Image.upload(PyramidAdapter(request), '/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def upload_image_validation(request):
@@ -61,14 +72,20 @@ def upload_image_validation(request):
         'fieldname': 'myImage',
         'validation': validation
     }
-    response = Image.upload(PyramidAdapter(request), '/public/', options)
+    try:
+        response = Image.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def upload_image_resize(request):
     options = {
       'resize': '300x300'
     }
-    response = Image.upload(PyramidAdapter(request), '/public/', options)
+    try:
+        response = Image.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def delete_file(request):
@@ -88,7 +105,10 @@ def delete_image(request):
       raise Exception('Could not delete image')
 
 def load_images(request):
-    response = Image.list('/public/')
+    try:
+        response = Image.list('/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
 def amazon_hash(request):
@@ -100,7 +120,10 @@ def amazon_hash(request):
         'accessKey': os.environ['AWS_ACCESS_KEY'],
         'secretKey': os.environ['AWS_SECRET_ACCESS_KEY']
     }
-    response = S3.getHash(config)
+    try:
+        response = S3.getHash(config)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
     return response
 
 

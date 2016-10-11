@@ -17,12 +17,22 @@ class File(object):
 
     @staticmethod
     def upload(req, fileRoute, options = None):
+        """
+        File upload to disk.
+        Parameters:
+            req: framework adapter to http request. See BaseAdapter.
+            fileRoute: string
+            options: dict optional, see defaultUploadOptions attribute
+        Return:
+            dict: {link: 'linkPath'}
+        """
 
         if options is None:
             options = File.defaultUploadOptions
         else:
             options = Utils.merge_dicts(File.defaultUploadOptions, options)
 
+        # Get extension.
         filename = req.getFilename(options['fieldname']);
         extension = Utils.getExtension(filename)
         extension = '.' + extension if extension else ''
@@ -36,10 +46,11 @@ class File(object):
             sha1 = hashlib.sha1(str(time.time())).hexdigest() # v2
         routeFilename = fileRoute + sha1 + extension
 
-        fullNamePath = os.path.abspath(os.path.dirname(sys.argv[0])) +  routeFilename
+        fullNamePath = Utils.getServerPath() +  routeFilename
 
         req.saveFile(options['fieldname'], fullNamePath)
 
+        # Check validation.
         if 'validation' in options:
             if not Utils.isValid(options['validation'], fullNamePath, req.getMimetype(options['fieldname'])):
                 File.delete(routeFilename)
@@ -51,15 +62,20 @@ class File(object):
                 img.transform(resize=options['resize'])
                 img.save(filename=fullNamePath)
 
-        # build and send response
+        # build and send response.
         response = {}
         response['link'] = routeFilename
         return response
 
     @staticmethod
     def delete(src):
+        """
+        Delete file from disk.
+        Parameters:
+            src: string
+        """
 
-        filePath = os.path.abspath(os.path.dirname(sys.argv[0])) + src
+        filePath = Utils.getServerPath() + src
         try:
             os.remove(filePath)
         except OSError:

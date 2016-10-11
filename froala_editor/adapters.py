@@ -8,28 +8,59 @@ Inspired fro http://peterhudec.github.io/authomatic/ MIT license.
 
 """
 
-"""
-Interface
-"""
 class BaseAdapter(object):
+    """
+    Interface. Inherit this class to use the lib in your framework.
+    """
+
+    def __init__(self, request):
+        """
+        Constructor.
+        Parameters:
+            request: http request object from some framework.
+        """
+        self.request = request
 
     def riseError(self):
+        """
+        Use this when you want to make an abstract method.
+        """
         raise NotImplementedError( "Should have implemented this method." )
 
     def getFilename(self, fieldname):
+        """
+        Get upload filename based on the fieldname.
+        Parameters:
+            fieldname: string
+        Return:
+            string: filename
+        """
         self.riseError()
 
     def getMimetype(self, fieldname):
+        """
+        Get upload file mime type based on the fieldname.
+        Parameters:
+            fieldname: string
+        Return:
+            string: mimetype
+        """
         self.riseError()
 
-    def getChunks(self, fieldname, fullNamePath):
+    def saveFile(self, fieldname, fullNamePath):
+        """
+        Save the upload file based on the fieldname on the fullNamePath location.
+        Parameters:
+            fieldname: string
+            fullNamePath: string
+        """
         self.riseError()
 
 
 class DjangoAdapter(BaseAdapter):
-
-    def __init__(self, request):
-        self.request = request
+    """
+    Django Adapter: Check BaseAdapter to see what methods description.
+    """
 
     def checkFile(self, fieldname):
         if fieldname not in self.request.FILES:
@@ -52,9 +83,9 @@ class DjangoAdapter(BaseAdapter):
 
 
 class FlaskAdapter(BaseAdapter):
-
-    def __init__(self, request):
-        self.request = request
+    """
+    Flask Adapter: Check BaseAdapter to see what methods description.
+    """
 
     def checkFile(self, fieldname):
         if fieldname not in self.request.files:
@@ -75,9 +106,9 @@ class FlaskAdapter(BaseAdapter):
 
 
 class PyramidAdapter(BaseAdapter):
-
-    def __init__(self, request):
-        self.request = request
+    """
+    Pyramid Adapter: Check BaseAdapter to see what methods description.
+    """
 
     def checkFile(self, fieldname):
         if fieldname not in self.request.POST:

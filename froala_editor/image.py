@@ -4,7 +4,6 @@ from os import listdir
 from os.path import isfile, join
 from mimetypes import MimeTypes
 import urllib
-import sys
 import os.path
 
 class Image(object):
@@ -22,6 +21,16 @@ class Image(object):
 
     @staticmethod
     def upload(req, fileRoute, options = None):
+        """
+        Image upload to disk.
+        Parameters:
+            req: framework adapter to http request. See BaseAdapter.
+            fileRoute: string
+            options: dict optional, see defaultUploadOptions attribute
+        Return:
+            dict: {link: 'linkPath'}
+        """
+
         if options is None:
             options = Image.defaultUploadOptions
         else:
@@ -31,10 +40,23 @@ class Image(object):
 
     @staticmethod
     def delete(src):
+        """
+        Delete image from disk.
+        Parameters:
+            src: string
+        """
         return File.delete(src)
 
     @staticmethod
     def list(folderPath, thumbPath = None):
+        """
+        List images from disk.
+        Parameters:
+            folderPath: string
+            thumbPath: string
+        Return:
+            list: list of images dicts. example: [{url: 'url', thumb: 'thumb', name: 'name'}, ...]
+        """
 
         if thumbPath == None:
             thumbPath = folderPath
@@ -42,7 +64,7 @@ class Image(object):
         # Array of image objects to return.
         response = []
 
-        absoluteFolderPath = os.path.abspath(os.path.dirname(sys.argv[0])) + folderPath
+        absoluteFolderPath = Utils.getServerPath() + folderPath
 
         # Image types.
         imageTypes = Image.defaultUploadOptions['validation']['allowedMimeTypes']
