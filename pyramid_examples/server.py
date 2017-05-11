@@ -12,7 +12,7 @@ import wand.image
 # Extend path to load Froala Editor library from outside the server.
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
-from froala_editor import File, Image, S3
+from froala_editor import File, Image, Video, S3
 from froala_editor import PyramidAdapter
 
 # Create public directory at startup.
@@ -20,6 +20,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 publicDirectory = os.path.join(BASE_DIR, 'public')
 if not os.path.exists(publicDirectory):
     os.makedirs(publicDirectory)
+
 
 def get_main_html(request):
     return FileResponse('../common/index.html')
@@ -34,6 +35,7 @@ def upload_file(request):
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
+
 
 def upload_file_validation(request):
 
@@ -53,12 +55,14 @@ def upload_file_validation(request):
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
+
 def upload_image(request):
     try:
         response = Image.upload(PyramidAdapter(request), '/public/')
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
+
 
 def upload_image_validation(request):
 
@@ -78,6 +82,7 @@ def upload_image_validation(request):
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
+
 def upload_image_resize(request):
     options = {
       'resize': '300x300'
@@ -88,6 +93,34 @@ def upload_image_resize(request):
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
 
+
+def upload_video(request):
+    try:
+        response = Video.upload(PyramidAdapter(request), '/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return Response(json.dumps(response))
+
+
+def upload_video_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 50 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    try:
+        response = Video.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return Response(json.dumps(response))
+
+
 def delete_file(request):
     src = request.POST.get('src')
     try:
@@ -95,6 +128,7 @@ def delete_file(request):
       return Response(json.dumps('ok'))
     except:
       raise Exception('Could not delete file')
+
 
 def delete_image(request):
     src = request.POST.get('src')
@@ -104,12 +138,14 @@ def delete_image(request):
     except:
       raise Exception('Could not delete image')
 
+
 def load_images(request):
     try:
         response = Image.list('/public/')
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
+
 
 def amazon_hash(request):
     config = {
@@ -148,6 +184,12 @@ if __name__ == '__main__':
 
     config.add_route('upload_image_resize', '/upload_image_resize')
     config.add_view(upload_image_resize, route_name='upload_image_resize')
+
+    config.add_route('upload_video', '/upload_video')
+    config.add_view(upload_video, route_name='upload_video')
+
+    config.add_route('upload_video_validation', '/upload_video_validation')
+    config.add_view(upload_video_validation, route_name='upload_video_validation')
 
     config.add_route('delete_file', '/delete_file')
     config.add_view(delete_file, route_name='delete_file')
