@@ -4,6 +4,7 @@ import base64
 
 from .utils import Utils
 
+
 class S3(object):
 
     @staticmethod
@@ -41,7 +42,7 @@ class S3(object):
 
         # Check default region.
         config['region'] = config['region'] if 'region' in config else 'us-east-1'
-        config['region'] = 'us-east-1' if config['region'] == 's3' else  config['region']
+        config['region'] = 'us-east-1' if config['region'] == 's3' else config['region']
 
         bucket = config['bucket']
         region = config['region']
@@ -63,24 +64,24 @@ class S3(object):
             'expiration': (datetime.datetime.utcnow() + datetime.timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             'conditions': [
                 {'bucket': bucket},
-                {'acl': acl },
+                {'acl': acl},
                 {'success_action_status': '201'},
                 {'x-requested-with': 'xhr'},
                 {'x-amz-algorithm': 'AWS4-HMAC-SHA256'},
                 {'x-amz-credential': credential},
                 {'x-amz-date': xAmzDate},
                 ['starts-with', '$key', keyStart],
-                ['starts-with', '$Content-Type', ''] # Accept all files.
+                ['starts-with', '$Content-Type', '']  # Accept all files.
             ],
         }
         # python 2-3 compatible:
         try:
-            policyBase64 = base64.b64encode(json.dumps(policy).encode()).decode('utf-8') # v3
+            policyBase64 = base64.b64encode(json.dumps(policy).encode()).decode('utf-8')  # v3
         except Exception:
-            policyBase64 = base64.b64encode(json.dumps(policy)) # v2
+            policyBase64 = base64.b64encode(json.dumps(policy))  # v2
 
         # Generate signature.
-        dateKey = Utils.hmac('AWS4' + secret, dateString);
+        dateKey = Utils.hmac('AWS4' + secret, dateString)
         dateRegionKey = Utils.hmac(dateKey, region)
         dateRegionServiceKey = Utils.hmac(dateRegionKey, 's3')
         signingKey = Utils.hmac(dateRegionServiceKey, 'aws4_request')
