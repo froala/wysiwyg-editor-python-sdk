@@ -52,7 +52,7 @@ class S3(object):
         accessKeyId = config['accessKey']
         secret = config['secretKey']
 
-        dateString = datetime.datetime.now().strftime("%Y%m%d") # Ymd format.
+        dateString = datetime.datetime.utcnow().strftime("%Y%m%d")  # Ymd format.
 
         credential = '/'.join([accessKeyId, dateString, region, 's3/aws4_request'])
         xAmzDate = dateString + 'T000000Z'
@@ -60,7 +60,7 @@ class S3(object):
         # Build policy.
         policy = {
             # 5 minutes into the future
-            'expiration': (datetime.datetime.now() + datetime.timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            'expiration': (datetime.datetime.utcnow() + datetime.timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             'conditions': [
                 {'bucket': bucket},
                 {'acl': acl },
