@@ -5,13 +5,13 @@ import sys
 from .utils import Utils
 from wand.image import Image
 
-class File(object):
+class Video(object):
 
     defaultUploadOptions = {
         'fieldname': 'file',
         'validation': {
-            'allowedExts': ['txt', 'pdf', 'doc'],
-            'allowedMimeTypes': ['text/plain', 'application/msword', 'application/x-pdf', 'application/pdf']
+            'allowedExts': ['mp4', 'webm', 'ogg'],
+            'allowedMimeTypes': ['video/mp4', 'video/webm', 'video/ogg']
         }
     }
 
@@ -28,9 +28,9 @@ class File(object):
         """
 
         if options is None:
-            options = File.defaultUploadOptions
+            options = Video.defaultUploadOptions
         else:
-            options = Utils.merge_dicts(File.defaultUploadOptions, options)
+            options = Utils.merge_dicts(Video.defaultUploadOptions, options)
 
         # Get extension.
         filename = req.getFilename(options['fieldname']);
@@ -53,7 +53,7 @@ class File(object):
         # Check validation.
         if 'validation' in options:
             if not Utils.isValid(options['validation'], fullNamePath, req.getMimetype(options['fieldname'])):
-                File.delete(routeFilename)
+                Video.delete(routeFilename)
                 raise Exception('File does not meet the validation.')
 
         # Check image resize.

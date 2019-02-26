@@ -12,11 +12,13 @@ import wand.image
 # Extend path to load Froala Editor library from outside the server.
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../../")
 
-from froala_editor import File, Image, S3
+from froala_editor import File, Image, Video, S3
 from froala_editor import DjangoAdapter
+
 
 def index(request):
     return render_to_response(os.path.join(settings.STATIC_DIR, 'common/index.html'))
+
 
 def upload_file(request):
     options = {
@@ -27,6 +29,7 @@ def upload_file(request):
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
+
 
 def upload_file_validation(request):
 
@@ -46,12 +49,44 @@ def upload_file_validation(request):
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+
+def upload_video(request):
+    options = {
+        'validation': None
+    }
+    try:
+        response = Video.upload(DjangoAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def upload_video_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 50 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    try:
+        response = Video.upload(DjangoAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
 def upload_image(request):
     try:
         response = Image.upload(DjangoAdapter(request), '/public/')
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
+
 
 def upload_image_validation(request):
 
@@ -71,6 +106,7 @@ def upload_image_validation(request):
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+
 def upload_image_resize(request):
     options = {
       'resize': '300x300'
@@ -81,6 +117,7 @@ def upload_image_resize(request):
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+
 def delete_file(request):
     src = request.POST.get('src', '')
     try:
@@ -88,6 +125,7 @@ def delete_file(request):
       return HttpResponse('ok', content_type="application/json")
     except:
       raise Exception('Could not delete file')
+
 
 def delete_image(request):
     src = request.POST.get('src', '')
@@ -97,12 +135,14 @@ def delete_image(request):
     except:
       raise Exception('Could not delete image')
 
+
 def load_images(request):
     try:
         response = Image.list('/public/')
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
+
 
 def amazon_hash(request):
     config = {

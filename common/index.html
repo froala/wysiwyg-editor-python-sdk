@@ -79,6 +79,10 @@
         fileUploadParams: {
           id: 'my_editor'
         },
+        videoUploadURL: './upload_video',
+        videoUploadParams: {
+          id: 'my_editor'
+        },
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST"
@@ -264,7 +268,8 @@
       .done(function( data ) {
         $('#edit-amazon').froalaEditor({
           imageUploadToS3: data,
-          fileUploadToS3: data
+          fileUploadToS3: data,
+          videoUploadToS3: data
         })
       });
     });

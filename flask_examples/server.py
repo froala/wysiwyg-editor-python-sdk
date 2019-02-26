@@ -9,7 +9,7 @@ import wand.image
 # Extend path to load Froala Editor library from outside the server.
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/../")
 
-from froala_editor import File, Image, S3
+from froala_editor import File, Image, Video, S3
 from froala_editor import FlaskAdapter
 
 # Create public directory at startup.
@@ -98,6 +98,34 @@ def upload_image_resize():
     }
     try:
         response = Image.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return json.dumps(response)
+
+
+@app.route('/upload_video', methods=['POST'])
+def upload_video():
+    try:
+        response = Video.upload(FlaskAdapter(request), '/public/')
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return json.dumps(response)
+
+@app.route('/upload_video_validation', methods=['POST'])
+def upload_video_validation():
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 50 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    try:
+        response = Video.upload(FlaskAdapter(request), '/public/', options)
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
