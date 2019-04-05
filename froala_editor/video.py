@@ -4,6 +4,7 @@ import hashlib
 import sys
 from .utils import Utils
 from wand.image import Image
+from froala_editor import File
 
 class Video(object):
 
@@ -70,13 +71,8 @@ class Video(object):
     @staticmethod
     def delete(src):
         """
-        Delete file from disk.
+        Delete video from disk.
         Parameters:
             src: string
         """
-
-        filePath = Utils.getServerPath() + src
-        try:
-            os.remove(filePath)
-        except OSError:
-            pass
+        return File.delete(src)
