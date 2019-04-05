@@ -135,6 +135,14 @@ def delete_image(request):
     except:
       raise Exception('Could not delete image')
 
+def delete_video(request):
+    src = request.POST.get('src', '')
+    try:
+      Video.delete(src)
+      return HttpResponse('ok', content_type="application/json")
+    except:
+      raise Exception('Could not delete video')
+
 
 def load_images(request):
     try:

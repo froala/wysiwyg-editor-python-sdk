@@ -87,6 +87,25 @@
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST"
       })
+      // Catch video removal from the editor.
+      .on('froalaEditor.video.removed', function (e, editor, $vid) {
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_video",
+          // Request params.
+          data: {
+            src: $vid.attr('src')
+          }
+        })
+        .done (function (data) {
+          console.log ('video was deleted');
+        })
+        .fail (function (err) {
+          console.log ('video delete problem: ' + JSON.stringify(err));
+        })
+      })
       // Catch image removal from the editor.
       .on('froalaEditor.image.removed', function (e, editor, $img) {
         $.ajax({
@@ -148,6 +167,25 @@
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST"
+      })
+      // Catch video removal from the editor.
+      .on('froalaEditor.video.removed', function (e, editor, $vid) {
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_video",
+          // Request params.
+          data: {
+            src: $vid.attr('src')
+          }
+        })
+        .done (function (data) {
+          console.log ('video was deleted');
+        })
+        .fail (function (err) {
+          console.log ('video delete problem: ' + JSON.stringify(err));
+        })
       })
       // Catch image removal from the editor.
       .on('froalaEditor.image.removed', function (e, editor, $img) {
@@ -213,6 +251,25 @@
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST"
+      })
+      // Catch video removal from the editor.
+      .on('froalaEditor.video.removed', function (e, editor, $vid) {
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_video",
+          // Request params.
+          data: {
+            src: $vid.attr('src')
+          }
+        })
+        .done (function (data) {
+          console.log ('video was deleted');
+        })
+        .fail (function (err) {
+          console.log ('video delete problem: ' + JSON.stringify(err));
+        })
       })
       // Catch image removal from the editor.
       .on('froalaEditor.image.removed', function (e, editor, $img) {

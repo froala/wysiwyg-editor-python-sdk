@@ -138,6 +138,14 @@ def delete_image(request):
     except:
       raise Exception('Could not delete image')
 
+def delete_video(request):
+    src = request.POST.get('src')
+    try:
+      Video.delete(src)
+      return Response(json.dumps('ok'))
+    except:
+      raise Exception('Could not delete video')
+
 
 def load_images(request):
     try:
@@ -196,6 +204,9 @@ if __name__ == '__main__':
 
     config.add_route('delete_image', '/delete_image')
     config.add_view(delete_image, route_name='delete_image')
+
+    config.add_route('delete_video', '/delete_video')
+    config.add_view(delete_video, route_name='delete_video')
 
     config.add_route('load_images', '/load_images')
     config.add_view(load_images, route_name='load_images')

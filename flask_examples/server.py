@@ -148,6 +148,15 @@ def delete_image():
     except:
       raise Exception('Could not delete image')
 
+@app.route('/delete_video', methods=['POST'])
+def delete_video():
+    src = request.form.get('src')
+    try:
+      Video.delete(src)
+      return json.dumps('ok')
+    except:
+      raise Exception('Could not delete video')
+
 @app.route('/load_images')
 def load_images():
     try:
