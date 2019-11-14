@@ -57,8 +57,6 @@
   <!-- End Froala -->
 
   <link rel="stylesheet" href="static/common/app.css">
-
-
 </head>
 
 <body>
@@ -70,7 +68,7 @@
   </div>
   <script>
     $(function() {
-      $('#edit').froalaEditor({
+      new FroalaEditor('#edit', {
         imageUploadURL: '/upload_image',
         imageUploadParams: {
           id: 'my_editor'
@@ -85,64 +83,66 @@
         },
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
-      // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_video",
-          // Request params.
-          data: {
-            src: $vid.attr('src')
+        imageManagerDeleteMethod: "POST",
+        events: {
+          // Catch video removal from the editor.
+          'video.removed': function (e, editor, $vid) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_video",
+              // Request params.
+              data: {
+                src: $vid.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('video was deleted');
+            })
+            .fail (function (err) {
+              console.log ('video delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'image.removed': function (e, editor, $img) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_image",
+              // Request params.
+              data: {
+                src: $img.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('image was deleted');
+            })
+            .fail (function (err) {
+              console.log ('image delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'file.unlink': function (e, editor, link) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_file",
+              // Request params.
+              data: {
+                src: link.getAttribute('href')
+              }
+            })
+            .done (function (data) {
+              console.log ('file was deleted');
+            })
+            .fail (function (err) {
+              console.log ('file delete problem: ' + JSON.stringify(err));
+            })
           }
-        })
-        .done (function (data) {
-          console.log ('video was deleted');
-        })
-        .fail (function (err) {
-          console.log ('video delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_image",
-          // Request params.
-          data: {
-            src: $img.attr('src')
-          }
-        })
-        .done (function (data) {
-          console.log ('image was deleted');
-        })
-        .fail (function (err) {
-          console.log ('image delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_file",
-          // Request params.
-          data: {
-            src: link.getAttribute('href')
-          }
-        })
-        .done (function (data) {
-          console.log ('file was deleted');
-        })
-        .fail (function (err) {
-          console.log ('file delete problem: ' + JSON.stringify(err));
-        })
+        }
       })
     });
   </script>
@@ -155,7 +155,7 @@
   </div>
   <script>
     $(function() {
-      $('#edit-resize').froalaEditor({
+      new FroalaEditor('#edit-resize', {
         imageUploadURL: '/upload_image_resize',
         imageUploadParams: {
           id: 'my_editor'
@@ -166,64 +166,66 @@
         },
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
-      // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_video",
-          // Request params.
-          data: {
-            src: $vid.attr('src')
+        imageManagerDeleteMethod: "POST",
+        events: {
+          // Catch video removal from the editor.
+          'video.removed': function (e, editor, $vid) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_video",
+              // Request params.
+              data: {
+                src: $vid.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('video was deleted');
+            })
+            .fail (function (err) {
+              console.log ('video delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'image.removed': function (e, editor, $img) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_image",
+              // Request params.
+              data: {
+                src: $img.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('image was deleted');
+            })
+            .fail (function (err) {
+              console.log ('image delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'file.unlink': function (e, editor, link) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_file",
+              // Request params.
+              data: {
+                src: link.getAttribute('href')
+              }
+            })
+            .done (function (data) {
+              console.log ('file was deleted');
+            })
+            .fail (function (err) {
+              console.log ('file delete problem: ' + JSON.stringify(err));
+            })
           }
-        })
-        .done (function (data) {
-          console.log ('video was deleted');
-        })
-        .fail (function (err) {
-          console.log ('video delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_image",
-          // Request params.
-          data: {
-            src: $img.attr('src')
-          }
-        })
-        .done (function (data) {
-          console.log ('image was deleted');
-        })
-        .fail (function (err) {
-          console.log ('image delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_file",
-          // Request params.
-          data: {
-            src: link.getAttribute('href')
-          }
-        })
-        .done (function (data) {
-          console.log ('file was deleted');
-        })
-        .fail (function (err) {
-          console.log ('file delete problem: ' + JSON.stringify(err));
-        })
+        }
       })
     });
   </script>
@@ -236,7 +238,7 @@
   </div>
   <script>
     $(function() {
-      $('#edit-validation').froalaEditor({
+      new FroalaEditor('#edit-validation', {
         imageUploadURL: '/upload_image_validation',
         imageUploadParams: {
           id: 'my_editor'
@@ -250,64 +252,66 @@
         fileMaxSize: 1024 * 1024 * 50,
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
-      // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_video",
-          // Request params.
-          data: {
-            src: $vid.attr('src')
+        imageManagerDeleteMethod: "POST",
+        events: {
+          // Catch video removal from the editor.
+          'video.removed': function (e, editor, $vid) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_video",
+              // Request params.
+              data: {
+                src: $vid.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('video was deleted');
+            })
+            .fail (function (err) {
+              console.log ('video delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'image.removed': function (e, editor, $img) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_image",
+              // Request params.
+              data: {
+                src: $img.attr('src')
+              }
+            })
+            .done (function (data) {
+              console.log ('image was deleted');
+            })
+            .fail (function (err) {
+              console.log ('image delete problem: ' + JSON.stringify(err));
+            })
+          },
+          // Catch image removal from the editor.
+          'file.unlink': function (e, editor, link) {
+            $.ajax({
+              // Request method.
+              method: "POST",
+              // Request URL.
+              url: "/delete_file",
+              // Request params.
+              data: {
+                src: link.getAttribute('href')
+              }
+            })
+            .done (function (data) {
+              console.log ('file was deleted');
+            })
+            .fail (function (err) {
+              console.log ('file delete problem: ' + JSON.stringify(err));
+            })
           }
-        })
-        .done (function (data) {
-          console.log ('video was deleted');
-        })
-        .fail (function (err) {
-          console.log ('video delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_image",
-          // Request params.
-          data: {
-            src: $img.attr('src')
-          }
-        })
-        .done (function (data) {
-          console.log ('image was deleted');
-        })
-        .fail (function (err) {
-          console.log ('image delete problem: ' + JSON.stringify(err));
-        })
-      })
-      // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_file",
-          // Request params.
-          data: {
-            src: link.getAttribute('href')
-          }
-        })
-        .done (function (data) {
-          console.log ('file was deleted');
-        })
-        .fail (function (err) {
-          console.log ('file delete problem: ' + JSON.stringify(err));
-        })
+        }
       })
     });
   </script>
@@ -323,7 +327,7 @@
     $(function() {
       $.get( "amazon_hash", {})
       .done(function( data ) {
-        $('#edit-amazon').froalaEditor({
+        new FroalaEditor('#edit-amazon', {
           imageUploadToS3: data,
           fileUploadToS3: data,
           videoUploadToS3: data
