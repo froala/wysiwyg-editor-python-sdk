@@ -6,14 +6,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
   <script src="static/bower_components/jquery/dist/jquery.min.js"></script>
-
+   
   <!-- Include Font Awesome. -->
-  <link href="static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/3.0.6/css/third_party/image_tui.min.css">
 
   <!-- Include Froala Editor styles -->
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/froala_editor.min.css" />
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/froala_style.min.css" />
-
+  
   <!-- Include Froala Editor Plugins styles -->
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/plugins/char_counter.css">
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/plugins/code_view.css">
@@ -45,18 +45,22 @@
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/image.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/image_manager.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/inline_style.min.js"></script>
-  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/line_breaker.min.js"></script>
+  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/line_breaker.min.js"></script>  
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/link.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/lists.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/paragraph_format.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/paragraph_style.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/quote.min.js"></script>
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/save.min.js"></script>
-  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/table.min.js"></script>
+  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/table.min.js"></script>  
   <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/video.min.js"></script>
-  <!-- End Froala -->
+  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/help.min.js"></script>
+  <script src="static/bower_components/froala-wysiwyg-editor/js/plugins/print.min.js"></script>
 
-  <link rel="stylesheet" href="static/common/app.css">
+  <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+  <!-- End Froala --> 
+
+ <link rel="stylesheet" href="static/common/app.css">
 
 
 </head>
@@ -69,8 +73,9 @@
     </form>
   </div>
   <script>
-    $(function() {
-      $('#edit').froalaEditor({
+    (function() {
+      new FroalaEditor('#edit', {
+        scaytCustomerId: '1:BaPcJ-zIoA84-HsdxA4-AlMum2-hrr633-cGEma1-WMaXJ-DfFbh4-Vo2ew4-plJvP1-IMwbD-La3',
         imageUploadURL: '/upload_image',
         imageUploadParams: {
           id: 'my_editor'
@@ -85,15 +90,15 @@
         },
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
-      // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
-        $.ajax({
-          // Request method.
-          method: "POST",
-          // Request URL.
-          url: "/delete_video",
+        imageManagerDeleteMethod: "POST",
+        events: {
+          // Catch video removal from the editor.
+          'video.removed': function (e, editor, $vid) {
+            $.ajax({
+              //Request method
+              method: "POST",
+              //Request URL.
+              url: "/delete_video",
           // Request params.
           data: {
             src: $vid.attr('src')
@@ -105,9 +110,9 @@
         .fail (function (err) {
           console.log ('video delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
+      'image.removed': function(e, editor, $img){
         $.ajax({
           // Request method.
           method: "POST",
@@ -124,9 +129,9 @@
         .fail (function (err) {
           console.log ('image delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
+      'file.unlink': function (e, editor, link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -135,7 +140,7 @@
           // Request params.
           data: {
             src: link.getAttribute('href')
-          }
+          }        
         })
         .done (function (data) {
           console.log ('file was deleted');
@@ -143,8 +148,10 @@
         .fail (function (err) {
           console.log ('file delete problem: ' + JSON.stringify(err));
         })
-      })
-    });
+      },
+    }
+  })
+})()
   </script>
 
   <div class="sample">
@@ -154,8 +161,8 @@
     </form>
   </div>
   <script>
-    $(function() {
-      $('#edit-resize').froalaEditor({
+    (function() {
+      new FroalaEditor('#edit-resize', {
         imageUploadURL: '/upload_image_resize',
         imageUploadParams: {
           id: 'my_editor'
@@ -166,10 +173,10 @@
         },
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
+        imageManagerDeleteMethod: "POST",
+        events: {
       // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
+      'froalaEditor.video.removed': function (e, editor, $vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -186,9 +193,9 @@
         .fail (function (err) {
           console.log ('video delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
+      'froalaEditor.image.removed': function (e, editor, $img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -205,9 +212,9 @@
         .fail (function (err) {
           console.log ('image delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
+      'froalaEditor.file.unlink': function (e, editor, link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -224,8 +231,10 @@
         .fail (function (err) {
           console.log ('file delete problem: ' + JSON.stringify(err));
         })
-      })
-    });
+      }
+    }
+  })
+})()
   </script>
 
   <div class="sample">
@@ -235,8 +244,9 @@
     </form>
   </div>
   <script>
-    $(function() {
-      $('#edit-validation').froalaEditor({
+    
+    (function() {
+      new FroalaEditor('#edit-validation', {
         imageUploadURL: '/upload_image_validation',
         imageUploadParams: {
           id: 'my_editor'
@@ -250,10 +260,10 @@
         fileMaxSize: 1024 * 1024 * 50,
         imageManagerLoadURL: '/load_images',
         imageManagerDeleteURL: "/delete_image",
-        imageManagerDeleteMethod: "POST"
-      })
+        imageManagerDeleteMethod: "POST",
+      events: {
       // Catch video removal from the editor.
-      .on('froalaEditor.video.removed', function (e, editor, $vid) {
+      'froalaEditor.video.removed': function (e, editor, $vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -270,9 +280,9 @@
         .fail (function (err) {
           console.log ('video delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.image.removed', function (e, editor, $img) {
+      'froalaEditor.image.removed': function (e, editor, $img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -289,9 +299,9 @@
         .fail (function (err) {
           console.log ('image delete problem: ' + JSON.stringify(err));
         })
-      })
+      },
       // Catch image removal from the editor.
-      .on('froalaEditor.file.unlink', function (e, editor, link) {
+     'froalaEditor.file.unlink': function (e, editor, link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -308,8 +318,10 @@
         .fail (function (err) {
           console.log ('file delete problem: ' + JSON.stringify(err));
         })
-      })
-    });
+      },
+    }
+  })
+})()
   </script>
 
   <div class="sample">
@@ -320,18 +332,18 @@
   </div>
 
   <script>
-    $(function() {
-      $.get( "amazon_hash", {})
-      .done(function( data ) {
-        $('#edit-amazon').froalaEditor({
+(function() {
+  $.get("amazon_hash",{})
+  .done(function( data ) {
+        new FroalaEditor('#edit-amazon', {
           imageUploadToS3: data,
           fileUploadToS3: data,
           videoUploadToS3: data
         })
       });
-    });
+    })()
   </script>
 
 </body>
 
-</html>
+</html>      

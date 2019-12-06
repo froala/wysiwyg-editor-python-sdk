@@ -30,6 +30,18 @@ Python 2 or Python 3
  * Go to `pyramid_examples` directory.
  * `$ python server.py` or `$ python3 server.py` to start a server at `http://localhost:7000/`.
 
+## Third Party Plugins
+`common/index.html`
+```python
+<script src="static/bower_components/froala-wysiwyg-editor/js/third_party/embedly.min.js"></script>
+<script src="static/bower_components/froala-wysiwyg-editor/js/third_party/spell_checker.min.js"></script>
+<script src="static/bower_components/froala-wysiwyg-editor/js/third_party/font_awesome.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/3.0.6/js/third_party/image_tui.min.js">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/3.0.6/css/third_party/image_tui.min.css"></script>
+```
+
+
+
 ## Import lib
 
 ```python
