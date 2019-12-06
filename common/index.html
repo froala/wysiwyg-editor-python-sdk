@@ -6,14 +6,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
   <script src="static/bower_components/jquery/dist/jquery.min.js"></script>
-   
+
   <!-- Include Font Awesome. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/3.0.6/css/third_party/image_tui.min.css">
 
   <!-- Include Froala Editor styles -->
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/froala_editor.min.css" />
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/froala_style.min.css" />
-  
+
   <!-- Include Froala Editor Plugins styles -->
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/plugins/char_counter.css">
   <link rel="stylesheet" href="static/bower_components/froala-wysiwyg-editor/css/plugins/code_view.css">
@@ -92,13 +92,13 @@
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST",
         events: {
-          // Catch video removal from the editor.
-          'video.removed': function (e, editor, $vid) {
-            $.ajax({
-              //Request method
-              method: "POST",
-              //Request URL.
-              url: "/delete_video",
+        // Catch video removal from the editor.
+        'video.removed': function (e, editor, $vid) {
+          $.ajax({
+            //Request method
+             method: "POST",
+             //Request URL.
+             url: "/delete_video",
           // Request params.
           data: {
             src: $vid.attr('src')
@@ -140,7 +140,7 @@
           // Request params.
           data: {
             src: link.getAttribute('href')
-          }        
+          }   
         })
         .done (function (data) {
           console.log ('file was deleted');
@@ -346,4 +346,4 @@
 
 </body>
 
-</html>      
+</html>
