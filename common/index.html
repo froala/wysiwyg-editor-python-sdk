@@ -93,7 +93,7 @@
         imageManagerDeleteMethod: "POST",
         events: {
         // Catch video removal from the editor.
-        'video.removed': function (e, editor, $vid) {
+        'video.removed': function ($vid) {
           $.ajax({
             //Request method
              method: "POST",
@@ -112,7 +112,7 @@
         })
       },
       // Catch image removal from the editor.
-      'image.removed': function(e, editor, $img){
+      'image.removed': function($img){
         $.ajax({
           // Request method.
           method: "POST",
@@ -131,7 +131,7 @@
         })
       },
       // Catch image removal from the editor.
-      'file.unlink': function (e, editor, link) {
+      'file.unlink': function (link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -176,7 +176,7 @@
         imageManagerDeleteMethod: "POST",
         events: {
       // Catch video removal from the editor.
-      'froalaEditor.video.removed': function (e, editor, $vid) {
+      'froalaEditor.video.removed': function ($vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -195,7 +195,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.image.removed': function (e, editor, $img) {
+      'froalaEditor.image.removed': function ($img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -214,7 +214,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.file.unlink': function (e, editor, link) {
+      'froalaEditor.file.unlink': function (link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -263,7 +263,7 @@
         imageManagerDeleteMethod: "POST",
       events: {
       // Catch video removal from the editor.
-      'froalaEditor.video.removed': function (e, editor, $vid) {
+      'froalaEditor.video.removed': function ($vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -282,7 +282,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.image.removed': function (e, editor, $img) {
+      'froalaEditor.image.removed': function ($img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -301,7 +301,7 @@
         })
       },
       // Catch image removal from the editor.
-     'froalaEditor.file.unlink': function (e, editor, link) {
+      'froalaEditor.file.unlink': function (link) {
         $.ajax({
           // Request method.
           method: "POST",
