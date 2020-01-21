@@ -30,8 +30,6 @@ Python 2 or Python 3
  * Go to `pyramid_examples` directory.
  * `$ python server.py` or `$ python3 server.py` to start a server at `http://localhost:7000/`.
 
-
-
 ## Import lib
 
 ```python
