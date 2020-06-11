@@ -19,6 +19,34 @@ from froala_editor import DjangoAdapter
 def index(request):
     return render_to_response(os.path.join(settings.STATIC_DIR, 'common/index.html'))
 
+def upload_files(request):
+    options = {
+        'validation': None
+    }
+    try:
+        response = File.upload(DjangoAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def upload_files_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 10 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    try:
+        response = File.upload(DjangoAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
 
 def upload_file(request):
     options = {
