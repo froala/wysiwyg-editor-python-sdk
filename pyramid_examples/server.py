@@ -25,6 +25,35 @@ if not os.path.exists(publicDirectory):
 def get_main_html(request):
     return FileResponse('../common/index.html')
 
+def upload_files(request):
+    options = {
+        'validation': None
+    }
+    try:
+        response = File.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return Response(json.dumps(response))
+
+
+def upload_files_validation(request):
+
+    def validation(filePath, mimetype):
+        size = os.path.getsize(filePath)
+        if size > 10 * 1024 * 1024:
+            return False
+        return True
+
+    options = {
+        'fieldname': 'myFile',
+        'validation': validation
+    }
+    try:
+        response = File.upload(PyramidAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return Response(json.dumps(response))
+
 
 def upload_file(request):
     options = {
@@ -175,8 +204,13 @@ if __name__ == '__main__':
     config = Configurator()
 
     config.add_route('get_main_html', '/')
-    config.add_view(get_main_html, route_name='get_main_html')
+    config.add_view(get_main_html, route_name='get_main_html')    
 
+    config.add_route('upload_files', '/upload_files')
+    config.add_view(upload_files, route_name='upload_files')
+
+    config.add_route('upload_files_validation', '/upload_files_validation')
+    config.add_view(upload_files_validation, route_name='upload_files_validation')
 
     config.add_route('upload_file', '/upload_file')
     config.add_view(upload_file, route_name='upload_file')
