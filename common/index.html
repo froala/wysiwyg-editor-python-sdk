@@ -130,6 +130,25 @@
           console.log ('image delete problem: ' + JSON.stringify(err));
         })
       },
+       // Catch files removal from the files manager popup.
+       'filesManager.removed': function(link){
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_file",
+          // Request params.
+          data: {
+            src: link
+          }
+        })
+        .done (function (data) {
+          console.log ('file was deleted from files manager popup');
+        })
+        .fail (function (err) {
+          console.log ('files manager popup delete problem: ' + JSON.stringify(err));
+        })
+      },
       // Catch image removal from the editor.
       'file.unlink': function (link) {
         $.ajax({
@@ -176,8 +195,27 @@
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST",
         events: {
+        // Catch files removal from the files manager popup.
+       'filesManager.removed': function (link) {
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_file",
+          // Request params.
+          data: {
+            src: link
+          }
+        })
+        .done (function (data) {
+          console.log ('file was deleted from files manager popup');
+        })
+        .fail (function (err) {
+          console.log ('files manager popup delete problem: ' + JSON.stringify(err));
+        })
+      },
       // Catch video removal from the editor.
-      'froalaEditor.video.removed': function ($vid) {
+      'video.removed': function ($vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -196,7 +234,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.image.removed': function ($img) {
+      'image.removed': function ($img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -215,7 +253,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.file.unlink': function (link) {
+      'file.unlink': function (link) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -249,6 +287,7 @@
     (function() {
       new FroalaEditor('#edit-validation', {
         filesManagerUploadURL: '/upload_files_validation',	
+        filesManagerUploadParam: 'myImage',
         imageUploadURL: '/upload_image_validation',
         imageUploadParams: {
           id: 'my_editor'
@@ -264,8 +303,27 @@
         imageManagerDeleteURL: "/delete_image",
         imageManagerDeleteMethod: "POST",
       events: {
+       // Catch files removal from the files manager popup.
+       'filesManager.removed': function (link) {
+        $.ajax({
+          // Request method.
+          method: "POST",
+          // Request URL.
+          url: "/delete_file",
+          // Request params.
+          data: {
+            src: link
+          }
+        })
+        .done (function (data) {
+          console.log ('file was deleted from files manager popup');
+        })
+        .fail (function (err) {
+          console.log ('files manager popup delete problem: ' + JSON.stringify(err));
+        })
+      },
       // Catch video removal from the editor.
-      'froalaEditor.video.removed': function ($vid) {
+      'video.removed': function ($vid) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -284,7 +342,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.image.removed': function ($img) {
+      'image.removed': function ($img) {
         $.ajax({
           // Request method.
           method: "POST",
@@ -303,7 +361,7 @@
         })
       },
       // Catch image removal from the editor.
-      'froalaEditor.file.unlink': function (link) {
+      'file.unlink': function (link) {
         $.ajax({
           // Request method.
           method: "POST",

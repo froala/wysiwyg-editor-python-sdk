@@ -39,17 +39,20 @@ def upload_files(request):
 def upload_files_validation(request):
 
     def validation(filePath, mimetype):
+        with wand.image.Image(filename=filePath) as img:
+            if img.width != img.height:
+                return False
         size = os.path.getsize(filePath)
         if size > 10 * 1024 * 1024:
             return False
         return True
 
     options = {
-        'fieldname': 'myFile',
+        'fieldname': 'myImage',
         'validation': validation
     }
     try:
-        response = File.upload(PyramidAdapter(request), '/public/', options)
+        response = Image.upload(PyramidAdapter(request), '/public/', options)
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return Response(json.dumps(response))
