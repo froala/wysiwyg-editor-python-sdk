@@ -197,3 +197,13 @@ def amazon_hash(request):
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return HttpResponse(json.dumps(response), content_type="application/json")
+
+def azure_hash(request):
+    config = {
+        'account': os.environ['AZURE_ACCOUNT'],
+        'container': os.environ['AZURE_CONTAINER'],
+        'accessKey': os.environ['AZURE_ACCESS_KEY'],
+        'SASToken': os.environ['AZURE_SAS_TOKEN'],
+        'uploadURL': os.environ['AZURE_UPLOAD_URL']
+    }
+    return HttpResponse(json.dumps(config), content_type="application/json")

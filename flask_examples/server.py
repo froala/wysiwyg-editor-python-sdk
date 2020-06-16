@@ -180,3 +180,14 @@ def amazon_hash():
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
     return jsonify(**response)
+
+@app.route('/azure_hash')
+def azure_hash():
+    config = {
+        'account': os.environ['AZURE_ACCOUNT'],
+        'container': os.environ['AZURE_CONTAINER'],
+        'accessKey': os.environ['AZURE_ACCESS_KEY'],
+        'SASToken': os.environ['AZURE_SAS_TOKEN'],
+        'uploadURL': os.environ['AZURE_UPLOAD_URL']
+    }
+    return jsonify(**config)

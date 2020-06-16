@@ -286,7 +286,7 @@
     
     (function() {
       new FroalaEditor('#edit-validation', {
-        filesManagerUploadURL: '/upload_files_validation',	
+        filesManagerUploadURL: '/upload_files_validation', 
         filesManagerUploadParam: 'myImage',
         imageUploadURL: '/upload_image_validation',
         imageUploadParams: {
@@ -400,6 +400,27 @@
           imageUploadToS3: data,
           fileUploadToS3: data,
           videoUploadToS3: data
+        })
+      });
+    })()
+  </script>
+
+  <div class="sample">
+    <h2>Sample 5: Save to Azure using access key or SAS token.</h2>
+    <form>
+      <textarea id="edit-azure" name="content"></textarea>
+    </form>
+  </div>
+
+  <script>
+  (function() {
+  $.get("azure_hash",{})
+  .done(function( data ) {
+        new FroalaEditor('#edit-azure', {
+          filesManagerUploadToAzure: data,
+          imageUploadToAzure: data,
+          fileUploadToAzure: data,
+          videoUploadToAzure: data
         })
       });
     })()
