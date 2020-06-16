@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^delete_video', views.delete_video, name='delete_video'),
     url(r'^load_images', views.load_images, name='load_images'),
     url(r'^amazon_hash', views.amazon_hash, name='amazon_hash'),
+    url(r'^azure_hash', views.azure_hash, name='azure_hash'),
     url(r'^upload_files$', views.upload_files, name='upload_files'),
     url(r'^upload_files_validation', views.upload_files_validation, name='upload_files_validation'),
 ]

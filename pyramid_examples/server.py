@@ -202,6 +202,20 @@ def amazon_hash(request):
         response = {'error': str(sys.exc_info()[1])}
     return response
 
+def azure_hash(request):
+    config = {
+        'account': os.environ['AZURE_ACCOUNT'],
+        'container': os.environ['AZURE_CONTAINER'],
+        'accessKey': os.environ['AZURE_ACCESS_KEY'],
+        'SASToken': os.environ['AZURE_SAS_TOKEN'],
+        'uploadURL': os.environ['AZURE_UPLOAD_URL']
+    }
+    try:
+        response = config
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return response
+
 
 if __name__ == '__main__':
     config = Configurator()
@@ -250,6 +264,9 @@ if __name__ == '__main__':
 
     config.add_route('amazon_hash', '/amazon_hash')
     config.add_view(amazon_hash, route_name='amazon_hash', renderer='json')
+
+    config.add_route('azure_hash', '/azure_hash')
+    config.add_view(azure_hash, route_name='azure_hash', renderer='json')
 
     config.add_static_view('public', path='public/')
     config.add_static_view('static', path='../')
