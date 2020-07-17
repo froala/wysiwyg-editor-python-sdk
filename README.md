@@ -38,6 +38,8 @@ from froala_editor import File, Image, S3
 from froala_editor import DjangoAdapter, FlaskAdapter, PyramidAdapter
 # Or make a custom adapter for your framework.
 ```
+ #### Note
+ > Third-party plugins are not supported
 
 ## Documentation
 
