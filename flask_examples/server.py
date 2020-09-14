@@ -45,6 +45,17 @@ def upload_file():
         response = {'error': str(sys.exc_info()[1])}
     return json.dumps(response)
 
+@app.route('/upload_files', methods=['POST'])
+def upload_files():
+    options = {
+        'validation': None
+    }
+    try:
+        response = File.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+    return json.dumps(response)
+
 @app.route('/upload_file_validation', methods=['POST'])
 def upload_file_validation():
 
@@ -128,6 +139,31 @@ def upload_video_validation():
         response = Video.upload(FlaskAdapter(request), '/public/', options)
     except Exception:
         response = {'error': str(sys.exc_info()[1])}
+    return json.dumps(response)
+
+@app.route('/upload_files_validation', methods=['POST'])
+def upload_files_validation():
+    def validation(filePath, mimetype):
+        try:
+            with wand.image.Image(filename=filePath) as img:
+                if img.width != img.height:
+                    return False
+        except Exception:
+            size = os.path.getsize(filePath)
+            if size > 10 * 1024 * 1024:
+                print(size > 10 * 1024 * 1024)
+                return False
+            return True
+
+    options = {
+        'fieldname': 'myImage',
+        'validation': validation
+    }
+    try:
+        response = Image.upload(FlaskAdapter(request), '/public/', options)
+    except Exception:
+        response = {'error': str(sys.exc_info()[1])}
+        print(json.dumps(response))
     return json.dumps(response)
 
 @app.route('/delete_file', methods=['POST'])
