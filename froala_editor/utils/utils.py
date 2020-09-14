@@ -73,7 +73,7 @@ class Utils(object):
         Return:
             string: serverPath
         """
-        return os.path.abspath(os.path.dirname(sys.argv[0]))
+        return os.getcwd()
 
     @staticmethod
     def isFileValid(filename, mimetype, allowedExts, allowedMimeTypes):
