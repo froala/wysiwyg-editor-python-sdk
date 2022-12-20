@@ -24,4 +24,3 @@ WORKDIR flask_examples
 ENV FLASK_APP="server.py"
 EXPOSE 5000
 ENTRYPOINT python -m flask run --host=0.0.0.0
-
