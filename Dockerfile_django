@@ -19,6 +19,10 @@ RUN pip install django
 RUN pip install wand
 RUN npm install -g bower
 RUN bower install
+RUN rm -rf bower_components/froala-wysiwyg-editor/
+RUN tar -xvf ${PackageName}-${PackageVersion}.tgz
+RUN mv package/ bower_components/froala-wysiwyg-editor/
+RUN rm -rf ${PackageName}-${PackageVersion}.tgz
 
 EXPOSE 8000
 WORKDIR django_examples/
