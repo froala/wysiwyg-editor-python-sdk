@@ -24,6 +24,7 @@ RUN tar -xvf ${PackageName}-${PackageVersion}.tgz
 RUN mv package/ bower_components/froala-wysiwyg-editor/
 RUN rm -rf ${PackageName}-${PackageVersion}.tgz
 
+ENV HOST=0.0.0.0
 EXPOSE 8000
 WORKDIR django_examples/
 ENTRYPOINT python manage.py runserver 0.0.0.0:8000
