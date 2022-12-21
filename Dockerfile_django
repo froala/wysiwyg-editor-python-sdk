@@ -1,6 +1,6 @@
 FROM python:2
 
-LABEL maintainer="froala_git_travis_bot@idera.com"
+LABEL maintainer="rizwan@celestialsys.com"
 
 ARG PackageName
 ARG PackageVersion
@@ -19,12 +19,16 @@ RUN pip install django
 RUN pip install wand
 RUN npm install -g bower
 RUN bower install
+
 RUN rm -rf bower_components/froala-wysiwyg-editor/
+
+
+#RUN wget --no-check-certificate --user ${NexusUser}  --password ${NexusPassword} https://nexus.tools.froala-infra.com/repository/Froala-npm/${PackageName}/-/${PackageName}-${PackageVersion}.tgz
 RUN tar -xvf ${PackageName}-${PackageVersion}.tgz
+
 RUN mv package/ bower_components/froala-wysiwyg-editor/
 RUN rm -rf ${PackageName}-${PackageVersion}.tgz
 
-ENV HOST=0.0.0.0
 EXPOSE 8000
 WORKDIR django_examples/
 ENTRYPOINT python manage.py runserver 0.0.0.0:8000
