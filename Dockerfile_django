@@ -6,7 +6,6 @@ ARG PackageName
 ARG PackageVersion
 ARG NexusUser
 ARG NexusPassword
-
 RUN apt update -y && \
     apt install -y npm nodejs jq unzip curl wget
 
