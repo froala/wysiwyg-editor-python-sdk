@@ -154,14 +154,16 @@ function deploy(){
     ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem "${SSH_USER}"@"${DEPLOYMENT_SERVER}" "cd /services/${SERVICE_NAME}/ && sudo docker-compose up -d --force-recreate"
     sleep 60
 
-    RET_CODE=$(curl -k -s  -o /tmp/notimportant.txt -w "%{http_code}"https://"${DEPLOYMENT_URL}")
-    echo "validation code: $RET_CODE for  https://${DEPLOYMENT_URL}"
-    if [ "${RET_CODE}" -ne 200 ]; then 
-        echo "Deployment validation failed!!! Please check pipeline logs." 
-        exit 1 
-    else 
-        echo -e "\n\tService available at URL: https://${DEPLOYMENT_URL}\n"
-    fi
+sleep 30
+RET_CODE=`curl -k -s -o /tmp/notimportant.txt -w "%{http_code}" https://${DJANGO_DEPLOYMENT_URL}`
+echo "validation code: $RET_CODE for  https://${DJANGO_DEPLOYMENT_URL}"
+if [ $RET_CODE -ne 200 ]; then 
+	echo "Deployment validation failed for django SDK!!! Please check pipeline logs." 
+	exit -1 
+else 
+	echo " Django Service available at URL: https://${DJANGO_DEPLOYMENT_URL}"
+
+fi
 }
 
 # If existing deployment less than max deployment then just deploy don't remove old container.
