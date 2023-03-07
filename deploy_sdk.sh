@@ -114,8 +114,8 @@ SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/-//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/\.//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/_//g'`
 echo " short branch name : ${SHORT_TRAVIS_BRANCH}"
-DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
-FLASK_DEPLOYMENT_URL="${FLASK_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
+DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
+FLASK_DEPLOYMENT_URL="${FLASK_CONTAINER_SERVICE_NAME}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
 echo " deployment URL: https://${DJANGO_DEPLOYMENT_URL}"
 echo " deployment URL: https://${FLASK_DEPLOYMENT_URL}"
 cp docker-compose.yml.template docker-compose.yml
@@ -176,7 +176,7 @@ if [ $RET_CODE -ne 200 ]; then
 	echo "Deployment validation failed for django SDK!!! Please check pipeline logs." 
 	exit -1 
 else 
-	echo " Django Service available at URL: https://${DJANGO_DEPLOYMENT_URL}\n"
+	echo " \n\tDjango Service available at URL: https://${DJANGO_DEPLOYMENT_URL}\n"
 
 fi
 
