@@ -176,7 +176,7 @@ if [ $RET_CODE -ne 200 ]; then
 	echo "Deployment validation failed for django SDK!!! Please check pipeline logs." 
 	exit -1 
 else 
-	echo " \n\tDjango Service available at URL: https://${DJANGO_DEPLOYMENT_URL}\n"
+	echo " Django Service available at URL: https://${DJANGO_DEPLOYMENT_URL}"
 
 fi
 
@@ -194,7 +194,7 @@ EXISTING_DEPLOYMENTS=`ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SS
 
 if [ ${EXISTING_DEPLOYMENTS} -ge ${MAX_DEPLOYMENTS_NR} ]; then
 	echo "Maximum deployments reached  on ${SDK_ENVIRONMENT} environment for ${BUILD_REPO_NAME}  ; existing deployments: ${EXISTING_DEPLOYMENTS} ; max depl: ${MAX_DEPLOYMENTS_NR} "
-	echo "Stopping container  ${OLDEST_CONTAINER} ..."
+	echo "Stopping container  ${OLDEST_DJANGO_CONTAINER} ..."
 	RCMD='ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem  '
 	RCMD="${RCMD} ${SSH_USER}@${DEPLOYMENT_SERVER} "
 	REM='" sudo docker stop '
