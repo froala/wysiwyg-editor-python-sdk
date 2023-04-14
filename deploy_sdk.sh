@@ -169,7 +169,7 @@ sleep 10 && ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${
 
 echo "Docker-compose is in : /services/${SERVICE_NAME} "
 
-sleep 30
+sleep 180
 RET_CODE=`curl -k -s -o /tmp/notimportant.txt -w "%{http_code}" https://${DJANGO_DEPLOYMENT_URL}`
 echo "validation code: $RET_CODE for  https://${DJANGO_DEPLOYMENT_URL}"
 if [ $RET_CODE -ne 200 ]; then 
