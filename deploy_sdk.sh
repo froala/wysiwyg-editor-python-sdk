@@ -164,11 +164,11 @@ DJANGO_CONTAINER_NAME="${LW_REPO_NAME}-${DJANGO_CONTAINER_SERVICE_NAME}-${CT_IND
 FLASK_CONTAINER_NAME="${LW_REPO_NAME}-${FLASK_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
 #echo "service name : ${SERVICE_NAME} & container name : ${CONTAINER_NAME}"
 
-#sed -i "s/ImageName/${NEXUS_CR_TOOLS_URL}\/${IMAGE_NAME}/g" docker-compose.yml
-#sed -i "s/UrlName/${DEPLOYMENT_URL}/g" docker-compose.yml
-#sed -i "s/ServiceName/${SERVICE_NAME}/g" docker-compose.yml
-#sed -i "s/PortNum/${CONTAINER_SERVICE_PORTNO}/g" docker-compose.yml
-#sed -i "s/ContainerName/${CONTAINER_NAME}/g" docker-compose.yml
+sed -i "s/ImageName/${NEXUS_CR_TOOLS_URL}\/${IMAGE_NAME}/g" docker-compose.yml
+sed -i "s/UrlName/${DEPLOYMENT_URL}/g" docker-compose.yml
+sed -i "s/ServiceName/${SERVICE_NAME}/g" docker-compose.yml
+sed -i "s/PortNum/${CONTAINER_SERVICE_PORTNO}/g" docker-compose.yml
+sed -i "s/ContainerName/${CONTAINER_NAME}/g" docker-compose.yml
 djangourl=${DJANGO_DEPLOYMENT_URL}
 flaskurl=${FLASK_DEPLOYMENT_URL}
 djangoservice="${DJANGO_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
@@ -247,7 +247,7 @@ else
 fi
 
 # flask testing not needed
-
+sleep 60
 RET_CODE=`curl -k -s -o /tmp/notimportant.txt -w "%{http_code}" https://${FLASK_DEPLOYMENT_URL}`
 echo "validation code: $RET_CODE for https://${FLASK_DEPLOYMENT_URL}"
 if [ $RET_CODE -ne 200 ]; then #
@@ -285,6 +285,25 @@ if [ ${EXISTING_DEPLOYMENTS} -ge ${MAX_DEPLOYMENTS_NR} ]; then
 	RCMD="${RCMD} ${SSH_USER}@${DEPLOYMENT_SERVER} "
 	REM='" sudo docker stop '
 	RCMD="${RCMD} $REM ${OLDEST_DJANGO_CONTAINER} OLDEST_FLASK_CONTAINER"'"'
+#	echo "ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker stop ${OLDEST_CONTAINER}"
+        echo $RCMD | bash
+	sleep 12
+#	echo "Please cleanup environment manually before redeploy"
+	
+	deploy_service  #call deploy_service function
+#	exit -1
+else 
+	echo "Deploying service ..."
+	deploy_service  #call deploy_service function
+fi
+#
+if [ ${EXISTING_DEPLOYMENTS} -ge ${MAX_DEPLOYMENTS_NR} ]; then
+	echo "Maximum deployments reached  on ${SDK_ENVIRONMENT} environment for ${BUILD_REPO_NAME}  ; existing deployments: ${EXISTING_DEPLOYMENTS} ; max depl: ${MAX_DEPLOYMENTS_NR} "
+	echo "Stopping container  ${OLDEST_CONTAINER} ..."
+	RCMD='ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem  '
+	RCMD="${RCMD} ${SSH_USER}@${DEPLOYMENT_SERVER} "
+	REM='" sudo docker stop '
+	RCMD="${RCMD} $REM ${OLDEST_FLASK_CONTAINER} OLDEST_FLASK_CONTAINER"'"'
 #	echo "ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker stop ${OLDEST_CONTAINER}"
         echo $RCMD | bash
 	sleep 12
