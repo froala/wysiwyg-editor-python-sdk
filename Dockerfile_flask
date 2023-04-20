@@ -2,10 +2,10 @@ FROM python:2
 
 LABEL maintainer="froala_git_travis_bot@idera.com"
 
-ARG PackageName=froala-editor-QA241122
-ARG PackageVersion=4.0.16
-ARG NexusUser=froala-cid
-ARG NexusPassword=tyl1pOcjsXGBCUDeh_iXsO7WLPK7LnEr3Ehn4JCz
+ARG PackageName=
+ARG PackageVersion
+ARG NexusUser
+ARG NexusPassword
 
 RUN apt update -y && \
     apt install -y npm  nodejs jq unzip curl wget
