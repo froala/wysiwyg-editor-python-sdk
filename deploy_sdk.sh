@@ -8,45 +8,29 @@
 if [ ${TRAVIS_PULL_REQUEST} != "false" ];  then echo "Not deploying on a pull request !!!" && exit 0; fi
 
 PACKAGE_VERSION=`jq '.version' version.json | tr -d '"'`
-#export IMAGE_NAME=`echo "froala-${BUILD_REPO_NAME}_${TRAVIS_BRANCH}:${PACKAGE_VERSION}" | tr '[:upper:]' '[:lower:]'`
-
 DJANGO_IMAGE_NAME=`echo "${BUILD_REPO_NAME}_${TRAVIS_BRANCH}_${DJANGO_CONTAINER_SERVICE_NAME}" | tr '[:upper:]' '[:lower:]'`
-FLASK_IMAGE_NAME=`echo "${BUILD_REPO_NAME}_${TRAVIS_BRANCH}_${FLASK_CONTAINER_SERVICE_NAME}" | tr '[:upper:]' '[:lower:]'`
-
 DEPLOYMENT_IS_RUNNING=`echo "${BUILD_REPO_NAME}_${TRAVIS_BRANCH}" | tr '[:upper:]' '[:lower:]'`
 
 export BASE_DOMAIN="froala-infra.com"
 export SDK_ENVIRONMENT=""
 export DEPLOYMENT_SERVER=""
-#docker-compose service
 SERVICE_NAME=""
-# container name --- will be used to identify the oldest deployment for this env
 CONTAINAER_NAME=""
-# container-index --- will be used to identify the oldest deployment for this env
-# CONTAINER_NAME will be CONTAINER_NAME-INDEX
 CT_INDEX=0
 
 OLDEST_DJANGO_CONTAINER=""
-OLDEST_FLASK_CONTAINER=""
-#
-# make sure we have ssh key from pipeline start
-#
+
 echo "${SSH_KEY}"  | base64 --decode > /tmp/sshkey.pem
 chmod 400 /tmp/sshkey.pem
 
-####
-
 export MAX_DEPLOYMENTS_NR=0
-#
-# find the max deployments alloowed per environment; it is defined in version.json file
-#
 function get_max_deployments_per_env(){
 
 local ENVIRONMENT=$1
 echo "getting max deployments for environment ${ENVIRONMENT}"
 MAX_DEPLOYMENTS_NR=`jq --arg sdkenvironment ${ENVIRONMENT}  '.[$sdkenvironment]' version.json | tr -d '"'`
 echo "detected max deployments: ${MAX_DEPLOYMENTS_NR}"
-#return $MAX_DEPLOYMENTS_NR
+
 }
 
 
@@ -55,10 +39,8 @@ local LW_REPO_NAME=$1
 local LW_SHORT_TRAVIS_BRANCH=$2
 local SDK_ENVIRONMENT=$3
 local DEPLOYMENT_SERVER=$4
-# get the index
 
 echo "searching for ${LW_REPO_NAME} depl..."
-# dont't fall into "About a minute ago "
 sleep 1
 
 RUNNING_DEPL=`ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker ps | grep -i ${LW_REPO_NAME}"`
@@ -67,7 +49,6 @@ echo "running depl var: ${RUNNING_DEPL}"
 echo "looking for ${LW_REPO_NAME} deployments"
 
 echo "getting indexes for oldest and latest deployed container"
-# build ssh cmd to get a list of running containers for this env
 DEPL='ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem '
 DEPL="${DEPL}  ${SSH_USER}@${DEPLOYMENT_SERVER} "
 REL=' " sudo docker ps | grep -i ' 
@@ -80,7 +61,6 @@ echo "show docker containers ssh cmd:  $DEPL"
 echo   ${DEPL}  | bash > file.txt
 echo "running conatiners: "
 cat file.txt
-# get those indexes  ; $NF always prints the last column
 CT_LOWER_INDEX=`cat file.txt | awk -F'-' '{print $NF }' | sort -nk1 | head -1`
 CT_HIGHER_INDEX=`cat file.txt | awk -F'-' '{print $NF }' | sort -nk1 | tail -1`
 
@@ -92,14 +72,11 @@ if [ -z "${RUNNING_DEPL}" ]; then
 else
 	echo "multiple deployments"
 	CT_INDEX=${CT_HIGHER_INDEX} && CT_INDEX=$((CT_INDEX+1))
-#	OLDEST_CONTAINER="${LW_REPO_NAME}-${CT_LOWER_INDEX}"
 	OLDEST_DJANGO_CONTAINER="${LW_REPO_NAME}-${DJANGO_CONTAINER_SERVICE_NAME}-${CT_LOWER_INDEX}"
-    OLDEST_FLASK_CONTAINER="${LW_REPO_NAME}-${FLASK_CONTAINER_SERVICE_NAME}-${CT_LOWER_INDEX}"
-	echo "new index: ${CT_INDEX}  & oldest horse out there: ${OLDEST_DJANGO_CONTAINER} && $OLDEST_FLASK_CONTAINER"
+	echo "new index: ${CT_INDEX}  & oldest horse out there: ${OLDEST_DJANGO_CONTAINER}"
 fi
 
 }
-
 
 echo " Container port: ${CONTAINER_SERVICE_PORTNO}"
 
@@ -122,7 +99,6 @@ get_max_deployments_per_env $SDK_ENVIRONMENT
 echo "deploying on environment :${SDK_ENVIRONMENT}, on server ${DEPLOYMENT_SERVER}, max deployments: ${MAX_DEPLOYMENTS_NR}"
 
 export BASE_DOMAIN="froala-infra.com"
-# Issues with CN for certificates ; lenght must be max 64
 SHORT_REPO_NAME="${BUILD_REPO_NAME:0:17}"
 BRANCH_LENGHT=`echo ${TRAVIS_BRANCH} |awk '{print length}'`
 if [ ${BRANCH_LENGHT} -lt 18 ]; then 
@@ -137,80 +113,35 @@ SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/\.//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/_//g'`
 echo " short branch name : ${SHORT_TRAVIS_BRANCH}"
 DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
-FLASK_DEPLOYMENT_URL="${FLASK_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
 echo " deployment URL: https://${DJANGO_DEPLOYMENT_URL}"
-echo " deployment URL: https://${FLASK_DEPLOYMENT_URL}"
-#DEPLOYMENT_URL="${BUILD_REPO_NAME}-${TRAVIS_BRANCH}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
-#echo " deployment URL: https://${DEPLOYMENT_URL}"
 
-#############
-# creating docker-compose file...
-#
 cp docker-compose.yml.template docker-compose.yml
-#manipulate to strictly verify depl on envs
 LW_REPO_NAME=`echo "${BUILD_REPO_NAME}" | tr '[:upper:]' '[:lower:]'`
-LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/_//g'`  #delete all _ from service name
-LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/-//g'`  #delete all - from service name
-LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/\.//g'`  #delete all . from service name
+LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/_//g'`
+LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/-//g'`
+LW_REPO_NAME=`echo ${LW_REPO_NAME} | sed -r 's/\.//g'`
 LW_SHORT_TRAVIS_BRANCH=`echo "${SHORT_TRAVIS_BRANCH}" | tr '[:upper:]' '[:lower:]'`
-#SERVICE_NAME=`echo "${BUILD_REPO_NAME}-${SHORT_TRAVIS_BRANCH}" | tr '[:upper:]' '[:lower:]'`
 
 SERVICE_NAME="${LW_REPO_NAME}-${LW_SHORT_TRAVIS_BRANCH}" 
 
 generate_container_name ${LW_REPO_NAME} ${LW_SHORT_TRAVIS_BRANCH} ${DEPLOYMENT_SERVER} ${DEPLOYMENT_SERVER} 
 
-#CONTAINER_NAME="${LW_REPO_NAME}-${CT_INDEX}"
 DJANGO_CONTAINER_NAME="${LW_REPO_NAME}-${DJANGO_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
-FLASK_CONTAINER_NAME="${LW_REPO_NAME}-${FLASK_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
-#echo "service name : ${SERVICE_NAME} & container name : ${CONTAINER_NAME}"
-
-#sed -i "s/ImageName/${NEXUS_CR_TOOLS_URL}\/${IMAGE_NAME}/g" docker-compose.yml
-#sed -i "s/UrlName/${DEPLOYMENT_URL}/g" docker-compose.yml
-#sed -i "s/ServiceName/${SERVICE_NAME}/g" docker-compose.yml
-#sed -i "s/PortNum/${CONTAINER_SERVICE_PORTNO}/g" docker-compose.yml
-#sed -i "s/ContainerName/${CONTAINER_NAME}/g" docker-compose.yml
 djangourl=${DJANGO_DEPLOYMENT_URL}
-flaskurl=${FLASK_DEPLOYMENT_URL}
 djangoservice="${DJANGO_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
 djangoportnum="${DJANGO_CONTAINER_SERVICE_PORTNO}"
-flaskservice="${FLASK_CONTAINER_SERVICE_NAME}-${CT_INDEX}"
-flaskportnum="${FLASK_CONTAINER_SERVICE_PORTNO}"
 djangoimagename="froala-${DJANGO_IMAGE_NAME}:${PACKAGE_VERSION}"
-flaskimagename="froala-${FLASK_IMAGE_NAME}:${PACKAGE_VERSION}"
-
-
 
 echo "Django Image Name:${djangoimagename} Url: ${djangourl}"
-echo "Flask Image Name:${flaskimagename} URL: ${flaskurl}"
 
 sed -i "s/DjangoImageName/${NEXUS_CR_TOOLS_URL}\\/${djangoimagename}/g" docker-compose.yml
 sed -i "s/DjangoUrlName/${djangourl}/g" docker-compose.yml
 sed -i "s/DjangoServiceName/${djangoservice}/g" docker-compose.yml
 sed -i "s/DjangoPortNum/${djangoportnum}/g" docker-compose.yml
 sed -i "s/DjangoContainerName/${DJANGO_CONTAINER_NAME}/g" docker-compose.yml
-
-###
-# flask not needed for testing core library features
-#
-#
-sed -i "s/FlaskImageName/${NEXUS_CR_TOOLS_URL}\\/${flaskimagename}/g" docker-compose.yml
-sed -i "s/FlaskUrlName/${flaskurl}/g" docker-compose.yml
-sed -i "s/FlaskServiceName/${flaskservice}/g" docker-compose.yml
-sed -i "s/FlaskPortNum/5000/g" docker-compose.yml
-sed -i "s/FlaskContainerName/${FLASK_CONTAINER_NAME}/g" docker-compose.yml
-#
-#
-
 echo "Docker-compose file: "
 cat docker-compose.yml
 
-######
-#
-#  Redeploy or don't deploy if max deployments reached
-#
-#echo "${SSH_KEY}"  | base64 --decode > /tmp/sshkey.pem
-#chmod 400 /tmp/sshkey.pem
-#SHORT_SERVICE_NAME="${SERVICE_NAME:0:15}"
 LW_REPO_NAME_LENGTH=`echo ${LW_REPO_NAME} |awk '{print length}'`
 SHORT_SERVICE_NAME="${SERVICE_NAME:0:$LW_REPO_NAME_LENGTH}"
 echo "short service name: ${SHORT_SERVICE_NAME}"
@@ -218,10 +149,7 @@ echo "short service name: ${SHORT_SERVICE_NAME}"
 
 
 function deploy_service(){
-#####
-#deploy the container
-#
-# make sure docker-compose dir exists and is clean
+
 ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} "if [ -d /services/${SERVICE_NAME} ];  then sudo docker-compose -f /services/${SERVICE_NAME}/docker-compose.yml down; fi"
 ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} "if [ -d /services/${SERVICE_NAME} ];  then rm -rf /services/${SERVICE_NAME}; fi && mkdir /services/${SERVICE_NAME}"
 scp  -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem docker-compose.yml ${SSH_USER}@${DEPLOYMENT_SERVER}:/services/${SERVICE_NAME}/docker-compose.yml
@@ -231,10 +159,6 @@ sleep 10 && ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${
 
 echo "Docker-compose is in : /services/${SERVICE_NAME} "
 
-#############
-#
-# validate deployment
-#
 sleep 30
 RET_CODE=`curl -k -s -o /tmp/notimportant.txt -w "%{http_code}" https://${DJANGO_DEPLOYMENT_URL}`
 echo "validation code: $RET_CODE for  https://${DJANGO_DEPLOYMENT_URL}"
@@ -243,38 +167,19 @@ if [ $RET_CODE -ne 200 ]; then
 	exit -1 
 else 
 	echo " Django Service available at URL: https://${DJANGO_DEPLOYMENT_URL}"
-#	exit 0
-fi
 
-# flask testing not needed
-
-RET_CODE=`curl -k -s -o /tmp/notimportant.txt -w "%{http_code}" https://${FLASK_DEPLOYMENT_URL}`
-echo "validation code: $RET_CODE for https://${FLASK_DEPLOYMENT_URL}"
-if [ $RET_CODE -ne 200 ]; then #
-	echo "Deployment validation failed for flask SDK!!! Please check pipeline logs." 
-	exit -1 
-else 
-	echo " FLASK Service available at URL: https://${FLASK_DEPLOYMENT_URL}"
-#	exit 0
 fi
 
 
 }  
 
-#using SHORT_SERVICE_NAME to redeploy the service
 REDEPLOYMENT=`ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker ps -a | grep -i "${DEPLOYMENT_IS_RUNNING}" | wc -l" `
 echo "${DEPLOYMENT_IS_RUNNING}"
 echo "checking if this PRD exists & do redeploy: ${REDEPLOYMENT}"
 if [ ${REDEPLOYMENT} -eq 2 ]; then 
-#	REDEPLOYMENT=true
 	echo "Redeploying service: ${SERVICE_NAME} ..."
-	deploy_service  #call deploy_service function
-#else REDEPLOYMENT=false
+	deploy_service  
 fi
-
-# verfify existing deployments nr for this particular env
-# use only repo name for pattern
-# probably a problem when pattern conflicts - eg cake3  & cake3php : pattern for cake3 might generate false conditional results - 5 cake3php deployments & 1 cake3 means no new cake3 service deployment even max nr it's not reached
 
 EXISTING_DEPLOYMENTS=`ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker ps  | grep -i "${LW_REPO_NAME}" | wc -l" `
 
@@ -284,16 +189,12 @@ if [ ${EXISTING_DEPLOYMENTS} -ge ${MAX_DEPLOYMENTS_NR} ]; then
 	RCMD='ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem  '
 	RCMD="${RCMD} ${SSH_USER}@${DEPLOYMENT_SERVER} "
 	REM='" sudo docker stop '
-	RCMD="${RCMD} $REM ${OLDEST_DJANGO_CONTAINER} OLDEST_FLASK_CONTAINER"'"'
-#	echo "ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker stop ${OLDEST_CONTAINER}"
+	RCMD="${RCMD} $REM ${OLDEST_DJANGO_CONTAINER} OLDEST_CONTAINER"'"'
         echo $RCMD | bash
 	sleep 12
-#	echo "Please cleanup environment manually before redeploy"
-	
-	deploy_service  #call deploy_service function
-#	exit -1
+
+	deploy_service  
 else 
 	echo "Deploying service ..."
-	deploy_service  #call deploy_service function
+	deploy_service  
 fi
-#

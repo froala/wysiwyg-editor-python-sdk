@@ -11,22 +11,6 @@ services:
       caddy: DjangoUrlName
       caddy.reverse_proxy: "{{upstreams DjangoPortNum}}"
       caddy_0.tls.ca: https://acme-staging-v02.api.letsencrypt.org/directory
-
-# flask not needed for testing core library features
-#
-  FlaskServiceName:
-    restart: unless-stopped
-    image: FlaskImageName
-    container_name: FlaskContainerName
-    pull_policy: always
-    networks:
-      - caddy
-    labels:
-      caddy_0: FlaskUrlName
-      caddy_0.reverse_proxy: "{{upstreams FlaskPortNum}}"
-      caddy_0.tls.ca: https://acme-staging-v02.api.letsencrypt.org/directory
-
-
 networks:
   caddy:
     external: true
