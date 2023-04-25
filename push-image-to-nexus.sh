@@ -7,7 +7,6 @@
 #  Validate that this is a valid branch for CI/CD
 #
 
-
 export BRANCH_NAME=`echo "${TRAVIS_BRANCH}" | tr '[:upper:]' '[:lower:]'`
 case "${BRANCH_NAME}" in
         dev*) echo "Branch ${TRAVIS_BRANCH} is eligible for CI/CD" ;;
