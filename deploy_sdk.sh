@@ -34,6 +34,7 @@ echo "detected max deployments: ${MAX_DEPLOYMENTS_NR}"
 }
 
 
+
 function generate_container_name(){
 local LW_REPO_NAME=$1
 local LW_SHORT_TRAVIS_BRANCH=$2
@@ -78,6 +79,7 @@ fi
 
 }
 
+
 echo " Container port: ${CONTAINER_SERVICE_PORTNO}"
 echo "${CT_INDEX}"
 
@@ -114,9 +116,10 @@ SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/\.//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/_//g'`
 echo " short branch name : ${SHORT_TRAVIS_BRANCH}"
 #changes
-generate_container_name
+generate_container_name ${LW_REPO_NAME} ${LW_SHORT_TRAVIS_BRANCH} ${DEPLOYMENT_SERVER} ${DEPLOYMENT_SERVER} 
 DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}-${CT_INDEX}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
 echo " deployment URL: https://${DJANGO_DEPLOYMENT_URL}"
+echo "${CT_INDEX}"
 
 cp docker-compose.yml.template docker-compose.yml
 LW_REPO_NAME=`echo "${BUILD_REPO_NAME}" | tr '[:upper:]' '[:lower:]'`
