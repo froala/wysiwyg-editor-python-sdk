@@ -2,14 +2,14 @@ version: '3.7'
 services:
   DjangoServiceName:
     restart: unless-stopped
-    image: DjangoImageName
-    container_name: DjangoContainerName
+    image: ImageName
+    container_name: ContainerName
     pull_policy: always
     networks:
       - caddy
     labels:
-      caddy: DjangoUrlName
-      caddy.reverse_proxy: "{{upstreams DjangoPortNum}}"
+      caddy: UrlName
+      caddy.reverse_proxy: "{{upstreams PortNum}}"
       caddy_0.tls.ca: https://acme-staging-v02.api.letsencrypt.org/directory
 networks:
   caddy:
