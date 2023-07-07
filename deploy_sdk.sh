@@ -114,6 +114,7 @@ SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/\.//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/_//g'`
 echo " short branch name : ${SHORT_TRAVIS_BRANCH}"
 #changes
+generate_container_name
 DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}-${CT_INDEX}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
 echo " deployment URL: https://${DJANGO_DEPLOYMENT_URL}"
 
