@@ -150,7 +150,7 @@ function deploy(){
         echo "Deployment validation failed!!! Please check pipeline logs." 
         exit 1 
     else 
-        echo -e "\n\tService available at URL: https://${DEPLOYMENT_URL}/demo/index.html"
+        echo -e "\n\tService available at URL: https://${DEPLOYMENT_URL}"
     fi
 }
 
