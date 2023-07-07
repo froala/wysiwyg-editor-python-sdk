@@ -78,7 +78,7 @@ else
 fi
 
 }
-
+generate_container_name "${LW_REPO_NAME}" "${LW_SHORT_TRAVIS_BRANCH}" "${SDK_ENVIRONMENT}" "${DEPLOYMENT_SERVER}"
 
 echo " Container port: ${CONTAINER_SERVICE_PORTNO}"
 echo "${CT_INDEX}"
@@ -116,7 +116,7 @@ SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/\.//g'`
 SHORT_TRAVIS_BRANCH=`echo ${SHORT_TRAVIS_BRANCH} | sed -r 's/_//g'`
 echo " short branch name : ${SHORT_TRAVIS_BRANCH}"
 #changes
-generate_container_name "${LW_REPO_NAME}" "${LW_SHORT_TRAVIS_BRANCH}" "${SDK_ENVIRONMENT}" "${DEPLOYMENT_SERVER}"
+
 
 DJANGO_DEPLOYMENT_URL="${DJANGO_CONTAINER_SERVICE_NAME}-${SHORT_REPO_NAME}-${SHORT_TRAVIS_BRANCH}-${CT_INDEX}.${SDK_ENVIRONMENT}.${BASE_DOMAIN}"
 echo " deployment URL: https://${DJANGO_DEPLOYMENT_URL}"
@@ -183,7 +183,7 @@ fi
 REDEPLOYMENT=`ssh -o "StrictHostKeyChecking no" -i  /tmp/sshkey.pem ${SSH_USER}@${DEPLOYMENT_SERVER} " sudo docker ps -a | grep -i "${DEPLOYMENT_IS_RUNNING}" | wc -l" `
 echo "${DEPLOYMENT_IS_RUNNING}"
 echo "checking if this PRD exists & do redeploy: ${REDEPLOYMENT}"
-if [ ${REDEPLOYMENT} -eq 2 ]; then 
+if [ ${REDEPLOYMENT} -lt "${MAX_DEPLOYMENTS_NR}"]; then 
 	echo "Redeploying service: ${SERVICE_NAME} ..."
 	deploy_service  
 fi
