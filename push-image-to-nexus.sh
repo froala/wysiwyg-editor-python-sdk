@@ -29,14 +29,14 @@ echo "short commit $SHORT_COMMIT"
 sudo apt-get update
 sudo apt-get install -y jq
 
-DJANGO_IMAGE_NAME=`echo "${BUILD_REPO_NAME}_${TRAVIS_BRANCH}_${DJANGO_CONTAINER_SERVICE_NAME}" | tr '[:upper:]' '[:lower:]'`
+IMAGE_NAME=`echo "${BUILD_REPO_NAME}_${TRAVIS_BRANCH}" | tr '[:upper:]' '[:lower:]'`
 
 PACKAGE_NAME=`jq '.name' version.json | tr -d '"'` 
 PACKAGE_VERSION=`jq '.version' version.json | tr -d '"'`
 echo "Package name & version : ${PACKAGE_NAME} $PACKAGE_VERSION "
 
 
-docker build -t  ${DJANGO_IMAGE_NAME}:${SHORT_COMMIT} --build-arg PackageName=${PACKAGE_NAME} --build-arg PackageVersion=${PACKAGE_VERSION} --build-arg NexusUser=${NEXUS_USER} --build-arg NexusPassword=${NEXUS_USER_PWD} -f Dockerfile_django .
+docker build -t  ${IMAGE_NAME}:${SHORT_COMMIT} --build-arg PackageName=${PACKAGE_NAME} --build-arg PackageVersion=${PACKAGE_VERSION} --build-arg NexusUser=${NEXUS_USER} --build-arg NexusPassword=${NEXUS_USER_PWD} -f Dockerfile_django .
 sleep 3
 docker image ls 
 
@@ -45,8 +45,8 @@ if [ ${TRAVIS_PULL_REQUEST} != "false" ];  then echo "Not publishing a pull requ
 echo "uploading to DJANGO_IMAGE_NAME nexus" ${PACKAGE_NAME}
 
 docker login -u ${NEXUS_USER} -p ${NEXUS_USER_PWD} ${NEXUS_CR_TOOLS_URL}
-docker tag  ${DJANGO_IMAGE_NAME}:${SHORT_COMMIT} ${NEXUS_CR_TOOLS_URL}/froala-${DJANGO_IMAGE_NAME}:${PACKAGE_VERSION}
-docker push ${NEXUS_CR_TOOLS_URL}/froala-${DJANGO_IMAGE_NAME}:${PACKAGE_VERSION}
+docker tag  ${IMAGE_NAME}:${SHORT_COMMIT} ${NEXUS_CR_TOOLS_URL}/froala-${IMAGE_NAME}:${PACKAGE_VERSION}
+docker push ${NEXUS_CR_TOOLS_URL}/froala-${IMAGE_NAME}:${PACKAGE_VERSION}
  
 
 
