@@ -1,4 +1,4 @@
-name: Auto Release – WordPress
+name: Auto Release – Python SDK
  
 on:
   pull_request:
