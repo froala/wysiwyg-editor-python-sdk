@@ -1,5 +1,5 @@
 name: Sync Version – Python SDK
- 
+
 on:
   repository_dispatch:
     types: [version_update]
@@ -13,18 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # --------------------------------------------
-      # Checkout repository
-      # --------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
           fetch-depth: 0
 
-      # --------------------------------------------
-      # Load & validate version
-      # --------------------------------------------
       - name: Load & validate version
         run: |
           VERSION="${{ github.event.client_payload.version }}"
@@ -43,9 +37,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Dispatching version $VERSION"
 
-      # --------------------------------------------
-      # Compare current version
-      # --------------------------------------------
+
       - name: Compare current version
         run: |
           CURRENT_VERSION=$(jq -r '.version' bower.json)
@@ -65,9 +57,7 @@ jobs:
 
           echo "Version change detected. Proceeding."
 
-      # --------------------------------------------
-      # Prepare release branch
-      # --------------------------------------------
+
       - name: Prepare release branch
         run: |
           BRANCH="release-v${VERSION}"
@@ -82,23 +72,16 @@ jobs:
             git checkout -b "$BRANCH"
           fi
 
-      # --------------------------------------------
-      # Update bower.json version + dependency
-      # --------------------------------------------
+
       - name: Update bower.json
         run: |
-          # Update SDK version
           jq ".version = \"$VERSION\"" bower.json > tmp.json
           mv tmp.json bower.json
       
-          # Update froala-wysiwyg-editor dependency
           jq ".dependencies[\"froala-wysiwyg-editor\"] = \"^$VERSION\"" bower.json > tmp.json
           mv tmp.json bower.json
 
 
-      # --------------------------------------------
-      # Commit & push
-      # --------------------------------------------
       - name: Commit & push
         run: |
           git config user.name "froala-travis-bot"
@@ -109,25 +92,18 @@ jobs:
 
           git push origin "$BRANCH"
 
-      # --------------------------------------------
-      # Create Pull Request
-      # --------------------------------------------
+
       - name: Create Pull Request
         env:
           GH_TOKEN: ${{ secrets.PAT }}
           RELEASE_NOTES: ${{ github.event.client_payload.release_notes }}
         run: |
           git fetch origin master
-
           if git diff --quiet origin/master..."$BRANCH"; then
             echo "No commits between $BRANCH and master. Skipping PR creation."
             exit 0
           fi
-
-          PR_BODY=$(printf \
-            "release: yes\n\n## Release Notes (from primary repo)\n\n%s\n" \
-            "$RELEASE_NOTES")
-
+          PR_BODY=$(printf "## Release Notes (from primary repo)\n\n%s\n" "$RELEASE_NOTES")
           gh pr create \
             --base master \
             --head "$BRANCH" \
